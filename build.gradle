@@ -6,6 +6,9 @@ version = "0.0.1-SNAPSHOT"
 apply from: "gradle/misc.gradle"
 apply from: "gradle/eclipse.gradle"
 
+sourceCompatibility = "1.6"
+targetCompatibility = "1.6"
+
 repositories {
     mavenCentral()
     maven { url "http://maven.seasar.org/maven2" }
