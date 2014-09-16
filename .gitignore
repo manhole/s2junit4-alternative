@@ -1,0 +1,20 @@
+/.gradle/
+/bin/
+/build/
+/target/
+/work/
+.DS_Store
+.classpath
+.project
+
+### IntelliJ IDEA ###
+*.iml
+.idea/workspace.xml
+.idea/misc.xml
+.idea/gradle.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/compiler.xml
+.idea/libraries/
+.idea/scopes/scope_settings.xml
+.idea/.name
