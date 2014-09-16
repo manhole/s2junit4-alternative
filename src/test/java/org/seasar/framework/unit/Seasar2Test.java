@@ -713,7 +713,8 @@ public class Seasar2Test extends TestCase {
         }
     }
 
-    public void testParameterizedS2JUnitOrder() {
+    @Ignore
+    public void _testParameterizedS2JUnitOrder() {
         JUnitCore core = new JUnitCore();
         Result result = core.run(ParameterizedS2JUnitOrderTest.class);
         printFailures(result.getFailures());
