@@ -23,6 +23,8 @@ dependencies {
 
     testCompile 'org.seasar.container:s2-framework:2.4.47:tests'
     testCompile 'org.seasar.container:s2-extension:2.4.47:tests'
+    testCompile 'hsqldb:hsqldb:1.8.0.1'
+
     testCompile 'org.apache.geronimo.specs:geronimo-jta_1.1_spec:1.1.1'
     testCompile 'org.apache.geronimo.specs:geronimo-ejb_3.0_spec:1.0'
     testCompile 'org.apache.geronimo.specs:geronimo-annotation_1.0_spec:1.0'
