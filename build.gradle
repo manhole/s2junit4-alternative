@@ -1,0 +1,23 @@
+apply plugin: "eclipse"
+apply plugin: "java"
+
+group = "jp.sourceforge.hotchpotch"
+version = "0.0.1-SNAPSHOT"
+
+apply from: "gradle/misc.gradle"
+
+repositories {
+    mavenCentral()
+    maven { url "http://maven.seasar.org/maven2" }
+}
+
+dependencies {
+    compile 'org.slf4j:slf4j-api:1.7.7'
+    compile 'org.seasar.container:s2-tiger:2.4.47'
+    compile "junit:junit:4.4"
+
+    testCompile 'org.slf4j:jcl-over-slf4j:1.7.7'
+    testCompile "ch.qos.logback:logback-classic:1.1.2"
+    testCompile "ch.qos.logback:logback-core:1.1.2"
+    testCompile "org.hamcrest:hamcrest-library:1.3"
+}
