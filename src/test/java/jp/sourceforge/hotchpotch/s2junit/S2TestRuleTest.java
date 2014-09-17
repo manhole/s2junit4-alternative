@@ -28,6 +28,8 @@ import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.Seasar2Test;
 import org.seasar.framework.unit.annotation.PostBindFields;
 import org.seasar.framework.unit.annotation.PreUnbindFields;
+import org.seasar.framework.unit.annotation.TxBehavior;
+import org.seasar.framework.unit.annotation.TxBehaviorType;
 import org.seasar.framework.util.TransactionManagerUtil;
 
 /**
@@ -363,6 +365,34 @@ public class S2TestRuleTest {
         assertTrue(result.wasSuccessful());
         assertEquals(1, count);
         assertEquals(true, txActive);
+    }
+
+    @RunWith(Seasar2.class)
+    @TxBehavior(TxBehaviorType.COMMIT)
+    public static class TransactionBehaviorNoneTest {
+
+        TransactionManager tm;
+
+        /**
+         *
+         */
+        @TxBehavior(TxBehaviorType.NONE)
+        public void bbb() {
+            count++;
+            txActive = TransactionManagerUtil.isActive(tm);
+        }
+    }
+
+    /**
+     *
+     */
+    public void testTransactionBehaviorNoneTest() {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(TransactionBehaviorNoneTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals(1, count);
+        assertEquals(false, txActive);
     }
 
     private void printFailures(List<Failure> failures) {
