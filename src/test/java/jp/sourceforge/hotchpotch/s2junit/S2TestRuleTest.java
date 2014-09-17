@@ -21,7 +21,6 @@ import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
-import org.seasar.framework.unit.S2TestMethodRunner;
 import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.Seasar2Test;
 import org.seasar.framework.unit.annotation.PostBindFields;
@@ -122,75 +121,50 @@ public class S2TestRuleTest {
         assertEquals("cba", log);
     }
 
-    /**
-     *
-     */
-    @RunWith(Seasar2.class)
     public static class AnnotationTest {
+
+        @Rule
+        public S2TestRule testRule = new S2TestRule();
 
         private Seasar2Test.Hello hello;
 
-        /**
-         *
-         */
         @BeforeClass
         public static void aaa() {
             log += "a";
         }
 
-        /**
-         *
-         */
         @AfterClass
         public static void bbb() {
             log += "b";
         }
 
-        /**
-         *
-         */
         @Before
         public void ccc() {
             log += "c";
         }
 
-        /**
-         *
-         */
         @After
         public void ddd() {
             log += "d";
         }
 
-        /**
-         *
-         */
         @Test
         public void eee() {
             log += "e";
         }
 
-        /**
-         *
-         */
         @Ignore
         @Test
         public void fff() {
             log = "f";
         }
 
-        /**
-         *
-         */
         @PostBindFields
         public void ggg() {
             assertNotNull(hello);
             log += "g";
         }
 
-        /**
-         *
-         */
         @PreUnbindFields
         public void hhh() {
             assertNotNull(hello);
@@ -198,9 +172,7 @@ public class S2TestRuleTest {
         }
     }
 
-    /**
-     *
-     */
+    @Test
     public void testAnnotationTest() {
         JUnitCore core = new JUnitCore();
         Result result = core.run(AnnotationTest.class);
