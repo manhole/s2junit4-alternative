@@ -135,11 +135,6 @@ public class S2TestRule implements TestRule {
     protected Method method;
 
     /**
-     * ノティファイアー
-     */
-    protected RunNotifier notifier;
-
-    /**
      * テストのディスクリプション
      */
     protected Description description;
