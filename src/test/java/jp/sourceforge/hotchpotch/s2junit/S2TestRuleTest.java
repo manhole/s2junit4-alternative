@@ -75,38 +75,29 @@ public class S2TestRuleTest {
         assertTrue(log.contains("b"));
     }
 
-    /**
-     *
-     */
-    @RunWith(Seasar2.class)
     public static class SortTest {
 
-        /**
-         *
-         */
+        @Rule
+        public S2TestRule testRule = new S2TestRule();
+
+        @Test
         public void aaa() {
             log += "a";
         }
 
-        /**
-         *
-         */
+        @Test
         public void bbb() {
             log += "b";
         }
 
-        /**
-         *
-         */
+        @Test
         public void ccc() {
             log += "c";
         }
 
     }
 
-    /**
-     * @throws Exception
-     */
+    @Test
     public void testSort() throws Exception {
         JUnitCore core = new JUnitCore();
         Request req = Request.aClass(SortTest.class).sortWith(
