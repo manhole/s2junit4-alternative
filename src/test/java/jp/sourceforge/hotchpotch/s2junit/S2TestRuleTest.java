@@ -42,6 +42,36 @@ public class S2TestRuleTest {
         //S2TestMethodRunner.s2junit4Path = S2TestMethodRunner.DEFAULT_S2JUNIT4_PATH;
     }
 
+    @RunWith(Seasar2.class)
+    public static class FilterTest {
+
+        /**
+         *
+         */
+        public void aaa() {
+            log += "a";
+        }
+
+        /**
+         *
+         */
+        public void bbb() {
+            log += "b";
+        }
+    }
+
+    /**
+     *
+     * @throws Exception
+     */
+    public void testFilter() throws Exception {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(Request.method(FilterTest.class, "bbb"));
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertFalse(log.contains("a"));
+        assertTrue(log.contains("b"));
+    }
 
     private void printFailures(List<Failure> failures) {
         for (final Failure failure : failures) {
