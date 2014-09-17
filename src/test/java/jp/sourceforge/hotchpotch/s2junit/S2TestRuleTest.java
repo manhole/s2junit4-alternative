@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
@@ -42,28 +43,26 @@ public class S2TestRuleTest {
         //S2TestMethodRunner.s2junit4Path = S2TestMethodRunner.DEFAULT_S2JUNIT4_PATH;
     }
 
-    @RunWith(Seasar2.class)
     public static class FilterTest {
 
-        /**
-         *
-         */
+        @Rule
+        public S2TestRule testRule = new S2TestRule();
+
+        // S2JUnitでの命名規約によるテストメソッド認識はサポートしない。
+        // @Testを付けること。
+        @Test
         public void aaa() {
             log += "a";
         }
 
-        /**
-         *
-         */
+        @Test
         public void bbb() {
             log += "b";
         }
+
     }
 
-    /**
-     *
-     * @throws Exception
-     */
+    @Test
     public void testFilter() throws Exception {
         JUnitCore core = new JUnitCore();
         Result result = core.run(Request.method(FilterTest.class, "bbb"));
