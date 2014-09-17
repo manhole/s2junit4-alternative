@@ -290,6 +290,64 @@ public class S2TestRuleTest {
         assertEquals("acgehdb", log);
     }
 
+    /**
+     *
+     */
+    @RunWith(Seasar2.class)
+    public static class InvalidMethodsTest {
+
+        /**
+         *
+         */
+        public void aaa() {
+            log += "a";
+        }
+
+        /**
+         *
+         */
+        public static void bbb() {
+            log += "b";
+        }
+
+        @SuppressWarnings("unused")
+        private void ccc() {
+            log += "c";
+        }
+
+        /**
+         * @return
+         */
+        public String ddd() {
+            log += "d";
+            return null;
+        }
+
+        /**
+         * @param a
+         */
+        public void eee(@SuppressWarnings("unused") String a) {
+            log += "e";
+        }
+
+        @SuppressWarnings("unused")
+        @Ignore
+        private void fff() {
+            log += "f";
+        }
+    }
+
+    /**
+     *
+     */
+    public void testInvalidMethodsTest() {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(InvalidMethodsTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals("a", log);
+    }
+
     private void printFailures(List<Failure> failures) {
         for (final Failure failure : failures) {
             System.out.println(">>> failure >>>");
