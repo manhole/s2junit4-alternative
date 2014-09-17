@@ -5,10 +5,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+import javax.transaction.TransactionManager;
+
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
-import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.Statement;
 import org.seasar.framework.beans.BeanDesc;
 import org.seasar.framework.beans.factory.BeanDescFactory;
@@ -35,6 +36,7 @@ import org.seasar.framework.util.tiger.ReflectionUtil;
 public class S2TestRule implements TestRule {
 
     private final BeanDesc beanDesc;
+    private Statement base;
 
     public S2TestRule(final Object testInstance) {
         this.test = testInstance;
@@ -48,6 +50,7 @@ public class S2TestRule implements TestRule {
 
     @Override
     public Statement apply(final Statement base, final Description description) {
+        this.base = base;
         introspector = new ConventionTestIntrospector();
         this.method = findMethod(description.getMethodName());
 
@@ -79,9 +82,68 @@ public class S2TestRule implements TestRule {
         return found;
     }
 
+    protected void runTest() throws Throwable {
+        if (!testContext.isJtaEnabled()) {
+            executeMethod();
+            return;
+        }
+        TransactionManager tm = null;
+        if (introspector.needsTransaction(testClass, method)) {
+            try {
+                tm = testContext.getComponent(TransactionManager.class);
+                tm.begin();
+            } catch (Throwable t) {
+                System.err.println(t);
+            }
+        }
+        try {
+            testContext.prepareTestData();
+            executeMethod();
+        } finally {
+            if (tm != null) {
+                if (requiresTransactionCommitment()) {
+                    tm.commit();
+                } else {
+                    tm.rollback();
+                }
+            }
+        }
+    }
+
+    protected boolean requiresTransactionCommitment() {
+        return !testFailed
+                && introspector
+                .requiresTransactionCommitment(testClass, method);
+    }
+
+    protected void executeMethod() throws Throwable {
+//        try {
+        executeMethodBody();
+//            if (expectsException()) {
+//                addFailure(new AssertionError("Expected exception: "
+//                        + expectedException().getName()));
+//            }
+//        } catch (final InvocationTargetException e) {
+//            final Throwable actual = e.getTargetException();
+//            if (!expectsException()) {
+//                addFailure(actual);
+//            } else if (isUnexpected(actual)) {
+//                String message = "Unexpected exception, expected<"
+//                        + expectedException().getName() + "> but was<"
+//                        + actual.getClass().getName() + ">";
+//                addFailure(new Exception(message, actual));
+//            }
+//        }
+    }
+
+    protected void executeMethodBody() throws Throwable {
+        //method.invoke(test);
+        base.evaluate();
+    }
 
     protected void evaluate(final Statement base) throws Throwable {
-        base.evaluate();
+        //base.evaluate();
+        runTest();
     }
 
     protected void before() throws Throwable {

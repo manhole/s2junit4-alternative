@@ -341,23 +341,21 @@ public class S2TestRuleTest {
         assertEquals("a", log);
     }
 
-    @RunWith(Seasar2.class)
     public static class TransactionBehaviorDefaultTest {
+
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
 
         TransactionManager tm;
 
-        /**
-         *
-         */
+        @Test
         public void bbb() {
             count++;
             txActive = TransactionManagerUtil.isActive(tm);
         }
     }
 
-    /**
-     *
-     */
+    @Test
     public void testTransactionBehaviorDefaultTest() {
         JUnitCore core = new JUnitCore();
         Result result = core.run(TransactionBehaviorDefaultTest.class);
