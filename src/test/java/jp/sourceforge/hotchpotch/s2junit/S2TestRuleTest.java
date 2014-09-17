@@ -279,6 +279,7 @@ public class S2TestRuleTest {
         }
     }
 
+    @Ignore
     @Test
     public void testConventionTest() {
         // サポートしないのでIgnoreする
