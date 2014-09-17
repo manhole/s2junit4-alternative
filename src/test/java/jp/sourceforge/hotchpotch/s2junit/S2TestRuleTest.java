@@ -43,12 +43,12 @@ public class S2TestRuleTest {
         log = "";
         count = 0;
         txActive = false;
-        Seasar2.configure();
+        //Seasar2.configure();
     }
 
     @After
     public void tearDown() {
-        Seasar2.dispose();
+        //Seasar2.dispose();
         // TODO packageが異なるので呼べない...
         //S2TestMethodRunner.s2junit4Path = S2TestMethodRunner.DEFAULT_S2JUNIT4_PATH;
     }
