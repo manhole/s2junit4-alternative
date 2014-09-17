@@ -9,6 +9,8 @@ import static org.junit.Assume.assumeTrue;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.transaction.TransactionManager;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -26,6 +28,7 @@ import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.Seasar2Test;
 import org.seasar.framework.unit.annotation.PostBindFields;
 import org.seasar.framework.unit.annotation.PreUnbindFields;
+import org.seasar.framework.util.TransactionManagerUtil;
 
 /**
  * @author manhole
@@ -336,6 +339,32 @@ public class S2TestRuleTest {
         printFailures(result.getFailures());
         assertTrue(result.wasSuccessful());
         assertEquals("a", log);
+    }
+
+    @RunWith(Seasar2.class)
+    public static class TransactionBehaviorDefaultTest {
+
+        TransactionManager tm;
+
+        /**
+         *
+         */
+        public void bbb() {
+            count++;
+            txActive = TransactionManagerUtil.isActive(tm);
+        }
+    }
+
+    /**
+     *
+     */
+    public void testTransactionBehaviorDefaultTest() {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(TransactionBehaviorDefaultTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals(1, count);
+        assertEquals(true, txActive);
     }
 
     private void printFailures(List<Failure> failures) {
