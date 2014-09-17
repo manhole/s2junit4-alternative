@@ -291,22 +291,15 @@ public class S2TestRuleTest {
         assertEquals("acgehdb", log);
     }
 
-    /**
-     *
-     */
-    @RunWith(Seasar2.class)
     public static class InvalidMethodsTest {
 
-        /**
-         *
-         */
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
+
         public void aaa() {
             log += "a";
         }
 
-        /**
-         *
-         */
         public static void bbb() {
             log += "b";
         }
@@ -316,17 +309,11 @@ public class S2TestRuleTest {
             log += "c";
         }
 
-        /**
-         * @return
-         */
         public String ddd() {
             log += "d";
             return null;
         }
 
-        /**
-         * @param a
-         */
         public void eee(@SuppressWarnings("unused") String a) {
             log += "e";
         }
@@ -338,9 +325,11 @@ public class S2TestRuleTest {
         }
     }
 
-    /**
-     *
+    /*
+     * 命名規約でのテストメソッド認識をテストしているのでIgnore
      */
+    @Ignore
+    @Test
     public void testInvalidMethodsTest() {
         JUnitCore core = new JUnitCore();
         Result result = core.run(InvalidMethodsTest.class);
