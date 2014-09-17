@@ -211,6 +211,85 @@ public class S2TestRuleTest {
         assertEquals(0, log.length());
     }
 
+    /**
+     *
+     */
+    @RunWith(Seasar2.class)
+    public static class ConventionTest {
+
+        private Seasar2Test.Hello hello;
+
+        /**
+         *
+         */
+        public static void beforeClass() {
+            log += "a";
+        }
+
+        /**
+         *
+         */
+        public static void afterClass() {
+            log += "b";
+        }
+
+        /**
+         *
+         */
+        public void before() {
+            log += "c";
+        }
+
+        /**
+         *
+         */
+        public void after() {
+            log += "d";
+        }
+
+        /**
+         *
+         */
+        public void aaa() {
+            log += "e";
+        }
+
+        /**
+         *
+         */
+        @Ignore
+        public void bbb() {
+            log = "f";
+        }
+
+        /**
+         *
+         */
+        public void postBindFields() {
+            assertNotNull(hello);
+            log += "g";
+        }
+
+        /**
+         *
+         */
+        public void preUnbindFields() {
+            assertNotNull(hello);
+            log += "h";
+        }
+    }
+
+    /**
+     *
+     */
+    public void testConventionTest() {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(ConventionTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals("acgehdb", log);
+    }
+
     private void printFailures(List<Failure> failures) {
         for (final Failure failure : failures) {
             System.out.println(">>> failure >>>");
