@@ -1,14 +1,17 @@
 package jp.sourceforge.hotchpotch.s2junit;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
@@ -71,6 +74,56 @@ public class S2TestRuleTest {
         assertFalse(log.contains("a"));
         assertTrue(log.contains("b"));
     }
+
+    /**
+     *
+     */
+    @RunWith(Seasar2.class)
+    public static class SortTest {
+
+        /**
+         *
+         */
+        public void aaa() {
+            log += "a";
+        }
+
+        /**
+         *
+         */
+        public void bbb() {
+            log += "b";
+        }
+
+        /**
+         *
+         */
+        public void ccc() {
+            log += "c";
+        }
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testSort() throws Exception {
+        JUnitCore core = new JUnitCore();
+        Request req = Request.aClass(SortTest.class).sortWith(
+                new Comparator<Description>() {
+
+                    public int compare(Description o1, Description o2) {
+                        return -1
+                                * (o1.getDisplayName().compareTo(o2
+                                .getDisplayName()));
+                    }
+                });
+        Result result = core.run(req);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals("cba", log);
+    }
+
 
     private void printFailures(List<Failure> failures) {
         for (final Failure failure : failures) {
