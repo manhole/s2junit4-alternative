@@ -2,13 +2,17 @@ package jp.sourceforge.hotchpotch.s2junit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Comparator;
 import java.util.List;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.Description;
@@ -19,6 +23,9 @@ import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 import org.seasar.framework.unit.S2TestMethodRunner;
 import org.seasar.framework.unit.Seasar2;
+import org.seasar.framework.unit.Seasar2Test;
+import org.seasar.framework.unit.annotation.PostBindFields;
+import org.seasar.framework.unit.annotation.PreUnbindFields;
 
 /**
  * @author manhole
@@ -115,6 +122,92 @@ public class S2TestRuleTest {
         assertEquals("cba", log);
     }
 
+    /**
+     *
+     */
+    @RunWith(Seasar2.class)
+    public static class AnnotationTest {
+
+        private Seasar2Test.Hello hello;
+
+        /**
+         *
+         */
+        @BeforeClass
+        public static void aaa() {
+            log += "a";
+        }
+
+        /**
+         *
+         */
+        @AfterClass
+        public static void bbb() {
+            log += "b";
+        }
+
+        /**
+         *
+         */
+        @Before
+        public void ccc() {
+            log += "c";
+        }
+
+        /**
+         *
+         */
+        @After
+        public void ddd() {
+            log += "d";
+        }
+
+        /**
+         *
+         */
+        @Test
+        public void eee() {
+            log += "e";
+        }
+
+        /**
+         *
+         */
+        @Ignore
+        @Test
+        public void fff() {
+            log = "f";
+        }
+
+        /**
+         *
+         */
+        @PostBindFields
+        public void ggg() {
+            assertNotNull(hello);
+            log += "g";
+        }
+
+        /**
+         *
+         */
+        @PreUnbindFields
+        public void hhh() {
+            assertNotNull(hello);
+            log += "h";
+        }
+    }
+
+    /**
+     *
+     */
+    public void testAnnotationTest() {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(AnnotationTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals("acgehdb", log);
+    }
 
     private void printFailures(List<Failure> failures) {
         for (final Failure failure : failures) {
