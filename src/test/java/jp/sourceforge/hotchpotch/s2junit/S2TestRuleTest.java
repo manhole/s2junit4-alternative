@@ -189,25 +189,19 @@ public class S2TestRuleTest {
         assertEquals("agcedhb", log);
     }
 
-    /**
-     *
-     */
-    @RunWith(Seasar2.class)
     @Ignore
     public static class IgnoreAnnotationForClassTest {
 
-        /**
-         *
-         */
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
+
         @Test
         public void aaa() {
             log += "a";
         }
     }
 
-    /**
-     *
-     */
+    @Test
     public void testIgnoreAnnotationForClassTest() {
         JUnitCore core = new JUnitCore();
         Result result = core.run(IgnoreAnnotationForClassTest.class);
