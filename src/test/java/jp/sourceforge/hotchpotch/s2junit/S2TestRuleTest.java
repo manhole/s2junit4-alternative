@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.Comparator;
 import java.util.List;
@@ -211,11 +212,10 @@ public class S2TestRuleTest {
         assertEquals(0, log.length());
     }
 
-    /**
-     *
-     */
-    @RunWith(Seasar2.class)
     public static class ConventionTest {
+
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
 
         private Seasar2Test.Hello hello;
 
@@ -279,10 +279,10 @@ public class S2TestRuleTest {
         }
     }
 
-    /**
-     *
-     */
+    @Test
     public void testConventionTest() {
+        // サポートしないのでIgnoreする
+        assumeTrue(false);
         JUnitCore core = new JUnitCore();
         Result result = core.run(ConventionTest.class);
         printFailures(result.getFailures());
