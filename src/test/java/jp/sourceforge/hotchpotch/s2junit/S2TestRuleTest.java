@@ -55,7 +55,7 @@ public class S2TestRuleTest {
     public static class FilterTest {
 
         @Rule
-        public S2TestRule testRule = new S2TestRule();
+        public S2TestRule testRule = S2TestRule.create(this);
 
         // S2JUnitでの命名規約によるテストメソッド認識はサポートしない。
         // @Testを付けること。
@@ -84,7 +84,7 @@ public class S2TestRuleTest {
     public static class SortTest {
 
         @Rule
-        public S2TestRule testRule = new S2TestRule();
+        public S2TestRule testRule = S2TestRule.create(this);
 
         @Test
         public void aaa() {
@@ -124,7 +124,7 @@ public class S2TestRuleTest {
     public static class AnnotationTest {
 
         @Rule
-        public S2TestRule testRule = new S2TestRule();
+        public S2TestRule testRule = S2TestRule.create(this);
 
         private Seasar2Test.Hello hello;
 
@@ -178,7 +178,15 @@ public class S2TestRuleTest {
         Result result = core.run(AnnotationTest.class);
         printFailures(result.getFailures());
         assertTrue(result.wasSuccessful());
-        assertEquals("acgehdb", log);
+        /*
+         * TestRuleで実装すると、この順序で実行されるようだ。
+         * @PostBindFields → @Before → @Test → @After → @PreUnbindFields
+         *
+         * S2JUnit4では:
+         * @Before → @PostBindFields → @Test → @PreUnbindFields → @After
+         */
+        //assertEquals("acgehdb", log);
+        assertEquals("agcedhb", log);
     }
 
     private void printFailures(List<Failure> failures) {
