@@ -419,6 +419,35 @@ public class S2TestRuleTest {
         assertEquals(true, txActive);
     }
 
+    @RunWith(Seasar2.class)
+    @TxBehavior(TxBehaviorType.NONE)
+    public static class TransactionBehaviorRollbackTest {
+
+        TransactionManager tm;
+
+        /**
+         *
+         */
+        @TxBehavior(TxBehaviorType.ROLLBACK)
+        public void bbb() {
+            count++;
+            txActive = TransactionManagerUtil.isActive(tm);
+        }
+
+    }
+
+    /**
+     *
+     */
+    public void testTransactionBehaviorRollbackTest() {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(TransactionBehaviorRollbackTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals(1, count);
+        assertEquals(true, txActive);
+    }
+
     private void printFailures(List<Failure> failures) {
         for (final Failure failure : failures) {
             System.out.println(">>> failure >>>");
