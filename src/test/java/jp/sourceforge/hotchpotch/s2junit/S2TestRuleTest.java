@@ -967,6 +967,42 @@ public class S2TestRuleTest {
         assertEquals("aaa", log);
     }
 
+    @RunWith(Seasar2.class)
+    @TxBehavior(TxBehaviorType.NONE)
+    public static class NonAutoIncludingTest {
+
+        private TestContext ctx;
+
+        private S2Container container;
+
+        /**
+         *
+         */
+        public void before() {
+            ctx.setAutoIncluding(false);
+        }
+
+        /**
+         *
+         */
+        public void aaa() {
+            log += container.hasComponentDef("hoge");
+            log += "-";
+            log += container.hasComponentDef(TransactionManager.class);
+        }
+    }
+
+    /**
+     *
+     */
+    public void testNonAutoIncludingTest() {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(NonAutoIncludingTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals("false-false", log);
+    }
+
     private void printFailures(List<Failure> failures) {
         for (final Failure failure : failures) {
             System.out.println(">>> failure >>>");
