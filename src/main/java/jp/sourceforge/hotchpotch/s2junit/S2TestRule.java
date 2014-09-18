@@ -43,7 +43,6 @@ public class S2TestRule implements TestRule {
     private Statement base;
 
     private TestContextSetup testContextSetup;
-    private Boolean autoIncluding;
 
     public S2TestRule(final Object testInstance) {
         this.test = testInstance;
@@ -287,9 +286,6 @@ public class S2TestRule implements TestRule {
             testContext.register(namingConvention);
             testContext.setNamingConvention(namingConvention);
         }
-        if (autoIncluding != null) {
-            testContext.setAutoIncluding(autoIncluding);
-        }
 
         for (Class<?> clazz = testClass; clazz != Object.class; clazz = clazz
                 .getSuperclass()) {
@@ -485,10 +481,6 @@ public class S2TestRule implements TestRule {
                 && ResourceUtil.isExist("convention.dicon")
                 && ResourceUtil.isExist("creator.dicon")
                 && ResourceUtil.isExist("customizer.dicon");
-    }
-
-    public void setAutoIncluding(final Boolean autoIncluding) {
-        this.autoIncluding = autoIncluding;
     }
 
     public void setupTestContext(final TestContextSetup setup) {

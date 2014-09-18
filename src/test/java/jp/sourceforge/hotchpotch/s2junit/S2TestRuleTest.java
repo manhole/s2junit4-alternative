@@ -983,7 +983,12 @@ public class S2TestRuleTest {
         @Rule
         public S2TestRule createRule() {
             final S2TestRule rule = S2TestRule.create(this);
-            rule.setAutoIncluding(false);
+            rule.setupTestContext(new TestContextSetup() {
+                @Override
+                public void setup(final TestContext testContext) {
+                    testContext.setAutoIncluding(false);
+                }
+            });
             return rule;
         }
 
