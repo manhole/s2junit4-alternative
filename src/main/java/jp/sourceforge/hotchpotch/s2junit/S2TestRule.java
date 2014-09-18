@@ -138,23 +138,7 @@ public class S2TestRule implements TestRule {
     }
 
     protected void executeMethod() throws Throwable {
-//        try {
         executeMethodBody();
-//            if (expectsException()) {
-//                addFailure(new AssertionError("Expected exception: "
-//                        + expectedException().getName()));
-//            }
-//        } catch (final InvocationTargetException e) {
-//            final Throwable actual = e.getTargetException();
-//            if (!expectsException()) {
-//                addFailure(actual);
-//            } else if (isUnexpected(actual)) {
-//                String message = "Unexpected exception, expected<"
-//                        + expectedException().getName() + "> but was<"
-//                        + actual.getClass().getName() + ">";
-//                addFailure(new Exception(message, actual));
-//            }
-//        }
     }
 
     protected void executeMethodBody() throws Throwable {
