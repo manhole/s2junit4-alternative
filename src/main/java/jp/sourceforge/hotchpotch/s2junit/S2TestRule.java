@@ -40,6 +40,7 @@ public class S2TestRule implements TestRule {
     private final BeanDesc beanDesc;
     private Statement base;
 
+    private TestContextSetup testContextSetup;
     private Boolean autoIncluding;
 
     public S2TestRule(final Object testInstance) {
@@ -300,6 +301,9 @@ public class S2TestRule implements TestRule {
                 }
             }
         }
+        if (testContextSetup != null) {
+            testContextSetup.setup(testContext);
+        }
     }
 
     protected void tearDownTestContext() throws Throwable {
@@ -476,6 +480,10 @@ public class S2TestRule implements TestRule {
 
     public void setAutoIncluding(final Boolean autoIncluding) {
         this.autoIncluding = autoIncluding;
+    }
+
+    public void setupTestContext(final TestContextSetup setup) {
+        this.testContextSetup = setup;
     }
 
 }

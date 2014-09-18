@@ -44,7 +44,6 @@ import org.seasar.framework.unit.Hoge;
 import org.seasar.framework.unit.IHoge;
 import org.seasar.framework.unit.InternalTestContext;
 import org.seasar.framework.unit.PreparationType;
-import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.Seasar2Test;
 import org.seasar.framework.unit.TestContext;
 import org.seasar.framework.unit.annotation.PostBindFields;
@@ -1045,34 +1044,43 @@ public class S2TestRuleTest {
         assertEquals("true-true-", log);
     }
 
-    @RunWith(Seasar2.class)
     public static class BindEJB3ByFieldNameTest {
+
+        @Rule
+        public S2TestRule createRule() {
+            final S2TestRule rule = S2TestRule.create(this);
+            //rule.setAutoIncluding(false);
+            rule.setupTestContext(new TestContextSetup() {
+                @Override
+                public void setup(final TestContext testContext) {
+                    before();
+                }
+            });
+            return rule;
+        }
 
         TestContext testContext;
 
         @EJB
         private IHoge hoge;
 
-        /**
-         *
+        /*
+         * S2JUnit4では呼ばれていたが、
+         * alternativeでは呼ばれない。
          */
         public void before() {
             testContext.register(Hoge.class);
             testContext.register(Foo.class);
         }
 
-        /**
-         *
-         */
+        @Test
         public void aaa() {
             log += (hoge != null) + "-";
             log += (hoge.aaa() != null);
         }
     }
 
-    /**
-     * @throws Exception
-     */
+    @Test
     public void testBindEJB3ByFieldName() throws Exception {
         JUnitCore core = new JUnitCore();
         Result result = core.run(BindEJB3ByFieldNameTest.class);
