@@ -38,10 +38,12 @@ import org.seasar.extension.dataset.DataTable;
 import org.seasar.extension.dataset.types.ColumnTypes;
 import org.seasar.extension.unit.BeanReader;
 import org.seasar.framework.container.S2Container;
+import org.seasar.framework.unit.Bar;
 import org.seasar.framework.unit.DataAccessor;
 import org.seasar.framework.unit.Foo;
 import org.seasar.framework.unit.Hoge;
 import org.seasar.framework.unit.Hoge2;
+import org.seasar.framework.unit.IBar;
 import org.seasar.framework.unit.IHoge;
 import org.seasar.framework.unit.InternalTestContext;
 import org.seasar.framework.unit.PreparationType;
@@ -1126,6 +1128,41 @@ public class S2TestRuleTest {
     public void testBindEJB3ByBeanNameTest() throws Exception {
         JUnitCore core = new JUnitCore();
         Result result = core.run(BindEJB3ByBeanNameTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals(1, result.getRunCount());
+        assertEquals("true", log);
+    }
+
+    @RunWith(Seasar2.class)
+    public static class BindEJB3ByTypeTest {
+
+        TestContext testContext;
+
+        @EJB
+        private IBar zzz;
+
+        /**
+         *
+         */
+        public void before() {
+            testContext.register(Bar.class);
+        }
+
+        /**
+         *
+         */
+        public void aaa() {
+            log += (zzz != null);
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testBindEJB3ByType() throws Exception {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(BindEJB3ByTypeTest.class);
         printFailures(result.getFailures());
         assertTrue(result.wasSuccessful());
         assertEquals(1, result.getRunCount());
