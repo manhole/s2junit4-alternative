@@ -1012,31 +1012,27 @@ public class S2TestRuleTest {
         assertEquals("false-false", log);
     }
 
-    @RunWith(Seasar2.class)
     public static class GetExpectedTest {
 
         private TestContext ctx;
 
-        /**
-         *
-         */
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
+
+        @Test
         public void aaa() {
             log += (ctx.getExpected() != null);
             log += "-";
         }
 
-        /**
-         *
-         */
+        @Test
         public void bbb() {
             log += (ctx.getExpected() == null);
             log += "-";
         }
     }
 
-    /**
-     * @throws Exception
-     */
+    @Test
     public void testGetExpected() throws Exception {
         JUnitCore core = new JUnitCore();
         Result result = core.run(GetExpectedTest.class);
