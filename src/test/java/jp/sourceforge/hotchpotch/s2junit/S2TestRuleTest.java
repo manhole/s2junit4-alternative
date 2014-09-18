@@ -1267,33 +1267,28 @@ public class S2TestRuleTest {
         assertEquals(1, count);
     }
 
-    @RunWith(Seasar2.class)
     public static class NamingConventionTest {
+
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
 
         private TestContext context;
 
         private NamingConvention namingConvention;
 
-        /**
-         *
-         */
-        @RootDicon("org/seasar/framework/unit/Seasar2Test_convention.dicon")
+        @Test
+        @RootDicon("jp/sourceforge/hotchpotch/s2junit/S2TestRuleTest_convention.dicon")
         public void aaa() {
             assertEquals("/", namingConvention.getViewRootPath());
             assertEquals(".htm", namingConvention.getViewExtension());
             log += "a";
         }
 
-        /**
-         *
-         */
         public void beforeBbb() {
             context.setAutoIncluding(false);
         }
 
-        /**
-         *
-         */
+        @Test
         @RegisterNamingConvention(false)
         public void bbb() {
             assertNull(namingConvention);
@@ -1302,9 +1297,7 @@ public class S2TestRuleTest {
         }
     }
 
-    /**
-     * @throws Exception
-     */
+    @Test
     public void testNamingConvention() throws Exception {
         JUnitCore core = new JUnitCore();
         Result result = core.run(NamingConventionTest.class);
