@@ -945,25 +945,20 @@ public class S2TestRuleTest {
         assertEquals(14, NonAutoPreparingTest.ccc_size);
     }
 
-    /**
-     *
-     */
-    @RunWith(Seasar2.class)
     public static class AutoIncludingTest {
+
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
 
         private S2Container container;
 
-        /**
-         *
-         */
+        @Test
         public void aaa() {
             log += container.getComponent("hoge").toString();
         }
     }
 
-    /**
-     *
-     */
+    @Test
     public void testAutoIncludingTest() {
         JUnitCore core = new JUnitCore();
         Result result = core.run(AutoIncludingTest.class);
