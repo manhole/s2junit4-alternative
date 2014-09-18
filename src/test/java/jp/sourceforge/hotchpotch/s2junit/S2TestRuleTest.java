@@ -814,21 +814,18 @@ public class S2TestRuleTest {
         assertEquals(1, count);
     }
 
-    @RunWith(Seasar2.class)
     public static class TrimStringBeanReaderTest {
+
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
 
         private TestContext context;
 
-        /**
-         *
-         */
         public void beforeAaa() {
             context.setTrimString(true);
         }
 
-        /**
-         *
-         */
+        @Test
         public void aaa() {
             DataSet dataSet = new BeanReader(new Emp("hoge   ")).read();
             String actual = (String) dataSet.getTable(0).getRow(0).getValue(0);
@@ -836,16 +833,11 @@ public class S2TestRuleTest {
             log += "a";
         }
 
-        /**
-         *
-         */
         public void beforeBbb() {
             context.setTrimString(false);
         }
 
-        /**
-         *
-         */
+        @Test
         public void bbb() {
             DataSet dataSet = new BeanReader(new Emp("hoge   ")).read();
             Object actual = dataSet.getTable(0).getRow(0).getValue(0);
@@ -853,9 +845,6 @@ public class S2TestRuleTest {
             log += "b";
         }
 
-        /**
-         *
-         */
         public void beforeCcc() {
             context.setTrimString(false);
 
@@ -870,9 +859,7 @@ public class S2TestRuleTest {
             log += "c";
         }
 
-        /**
-         *
-         */
+        @Test
         public void ccc() {
             assertEquals(ColumnTypes.NOT_TRIM_STRING, ColumnTypes
                     .getColumnType(String.class));
@@ -885,10 +872,7 @@ public class S2TestRuleTest {
             log += "d";
         }
 
-        /**
-         *
-         */
-        public void AfterCcc() {
+        public void afterCcc() {
             assertEquals(ColumnTypes.STRING, ColumnTypes
                     .getColumnType(String.class));
             assertEquals(ColumnTypes.STRING, ColumnTypes
@@ -901,31 +885,23 @@ public class S2TestRuleTest {
         }
     }
 
-    /**
-     *
-     */
     public static class Emp {
 
         private String name;
 
-        /**
-         * @param name
-         */
         public Emp(String name) {
             this.name = name;
         }
 
-        /**
-         * @return
-         */
         public String getName() {
             return name;
         }
     }
 
-    /**
-     *
-     */
+    // テスト命名規約でのテストメソッド判定はサポートしないことにする。
+    // ただしbeforeXxx, afterXxxは、代替アノテーションが存在しないため移植対象とするかも。
+    @Ignore
+    @Test
     public void testTrimStringBeanReaderTest() {
         JUnitCore core = new JUnitCore();
         Result result = core.run(TrimStringBeanReaderTest.class);
