@@ -1369,6 +1369,56 @@ public class S2TestRuleTest {
         assertEquals("a", log);
     }
 
+
+    // TODO configure,Seasar2をカスタマイズするテスト群
+
+    @RunWith(Seasar2.class)
+    public static class CustomizeSeasar2Test {
+
+        /**
+         *
+         */
+        public void aaa() {
+            log += "a";
+            count++;
+        }
+
+        /**
+         *
+         */
+        public void beforeBbb() {
+            log += "b";
+            count++;
+        }
+
+        /**
+         *
+         */
+        @Test
+        public void bbb() {
+            log += "c";
+            count++;
+        }
+    }
+
+    /**
+     *
+     */
+    public void testCustomizeSeasar2Test() {
+        configure("Seasar2.dicon");
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(CustomizeSeasar2Test.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals(1, count);
+        assertEquals("c", log);
+    }
+
+    private void configure(String name) {
+        String path = getClass().getName().replace('.', '/') + "." + name;
+        Seasar2.configure(path);
+    }
+
     private void printFailures(List<Failure> failures) {
         for (final Failure failure : failures) {
             System.out.println(">>> failure >>>");
