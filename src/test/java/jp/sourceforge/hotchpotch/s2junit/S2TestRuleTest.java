@@ -40,6 +40,7 @@ import org.seasar.framework.container.S2Container;
 import org.seasar.framework.unit.DataAccessor;
 import org.seasar.framework.unit.InternalTestContext;
 import org.seasar.framework.unit.PreparationType;
+import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.Seasar2Test;
 import org.seasar.framework.unit.TestContext;
 import org.seasar.framework.unit.annotation.PostBindFields;
@@ -1009,6 +1010,39 @@ public class S2TestRuleTest {
         printFailures(result.getFailures());
         assertTrue(result.wasSuccessful());
         assertEquals("false-false", log);
+    }
+
+    @RunWith(Seasar2.class)
+    public static class GetExpectedTest {
+
+        private TestContext ctx;
+
+        /**
+         *
+         */
+        public void aaa() {
+            log += (ctx.getExpected() != null);
+            log += "-";
+        }
+
+        /**
+         *
+         */
+        public void bbb() {
+            log += (ctx.getExpected() == null);
+            log += "-";
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetExpected() throws Exception {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(GetExpectedTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals("true-true-", log);
     }
 
     private void printFailures(List<Failure> failures) {
