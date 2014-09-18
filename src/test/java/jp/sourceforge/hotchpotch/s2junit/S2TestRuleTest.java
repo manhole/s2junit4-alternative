@@ -591,11 +591,10 @@ public class S2TestRuleTest {
         assertEquals("abc", log);
     }
 
-    /**
-     *
-     */
-    @RunWith(Seasar2.class)
     public static class FieldBindingTest {
+
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
 
         private static List<Object> values = new ArrayList<Object>();
 
@@ -605,23 +604,15 @@ public class S2TestRuleTest {
 
         private TestContext context;
 
-        /**
-         *
-         */
         public void beforeAaa() {
             set();
         }
 
-        /**
-         *
-         */
+        @Test
         public void aaa() {
             set();
         }
 
-        /**
-         *
-         */
         public void afterAaa() {
             set();
         }
@@ -633,9 +624,10 @@ public class S2TestRuleTest {
         }
     }
 
-    /**
-     *
-     */
+    // テスト命名規約でのテストメソッド判定はサポートしないことにする。
+    // ただしbeforeXxx, afterXxxは、代替アノテーションが存在しないため移植対象とするかも。
+    @Ignore
+    @Test
     public void testFieldBindingTest() {
         FieldBindingTest.values = new ArrayList<Object>();
         JUnitCore core = new JUnitCore();
