@@ -696,79 +696,59 @@ public class S2TestRuleTest {
         assertEquals(16, AutoPreparingTest.ccc_size);
     }
 
-    @RunWith(Seasar2.class)
     public static class PreparationTypeTest {
+
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
 
         TestContext context;
 
         DataAccessor da;
 
-        /**
-         *
-         */
+        @Test
         public void defaultSetting() {
             int size = da.readDbByTable("EMP").getRowSize();
             assertEquals(16, size);
         }
 
-        /**
-         *
-         */
         public void beforeNone() {
             context.setPreparationType(PreparationType.NONE);
         }
 
-        /**
-         *
-         */
+        @Test
         public void none() {
             int size = da.readDbByTable("EMP").getRowSize();
             assertEquals(14, size);
             log += "a";
         }
 
-        /**
-         *
-         */
         public void beforeWrite() {
             context.setPreparationType(PreparationType.WRITE);
         }
 
-        /**
-         *
-         */
+        @Test
         public void write() {
             int size = da.readDbByTable("EMP").getRowSize();
             assertEquals(16, size);
             log += "b";
         }
 
-        /**
-         *
-         */
         public void beforeReplace() {
             context.setPreparationType(PreparationType.REPLACE);
         }
 
-        /**
-         *
-         */
+        @Test
         public void replace() {
             int size = da.readDbByTable("EMP").getRowSize();
             assertEquals(15, size);
             log += "c";
         }
 
-        /**
-         *
-         */
         public void beforeAllReplace() {
             context.setPreparationType(PreparationType.ALL_REPLACE);
         }
 
-        /**
-         *
-         */
+        @Test
         public void allReplace() {
             int size = da.readDbByTable("EMP").getRowSize();
             assertEquals(2, size);
@@ -777,9 +757,10 @@ public class S2TestRuleTest {
 
     }
 
-    /**
-     *
-     */
+    // テスト命名規約でのテストメソッド判定はサポートしないことにする。
+    // ただしbeforeXxx, afterXxxは、代替アノテーションが存在しないため移植対象とするかも。
+    @Ignore
+    @Test
     public void testPreparationTypeTest() {
         JUnitCore core = new JUnitCore();
         Result result = core.run(PreparationTypeTest.class);
