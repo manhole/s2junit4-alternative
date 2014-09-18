@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.transaction.TransactionManager;
 
 import org.junit.After;
@@ -38,6 +39,9 @@ import org.seasar.extension.dataset.types.ColumnTypes;
 import org.seasar.extension.unit.BeanReader;
 import org.seasar.framework.container.S2Container;
 import org.seasar.framework.unit.DataAccessor;
+import org.seasar.framework.unit.Foo;
+import org.seasar.framework.unit.Hoge;
+import org.seasar.framework.unit.IHoge;
 import org.seasar.framework.unit.InternalTestContext;
 import org.seasar.framework.unit.PreparationType;
 import org.seasar.framework.unit.Seasar2;
@@ -1039,6 +1043,43 @@ public class S2TestRuleTest {
         printFailures(result.getFailures());
         assertTrue(result.wasSuccessful());
         assertEquals("true-true-", log);
+    }
+
+    @RunWith(Seasar2.class)
+    public static class BindEJB3ByFieldNameTest {
+
+        TestContext testContext;
+
+        @EJB
+        private IHoge hoge;
+
+        /**
+         *
+         */
+        public void before() {
+            testContext.register(Hoge.class);
+            testContext.register(Foo.class);
+        }
+
+        /**
+         *
+         */
+        public void aaa() {
+            log += (hoge != null) + "-";
+            log += (hoge.aaa() != null);
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testBindEJB3ByFieldName() throws Exception {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(BindEJB3ByFieldNameTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals(1, result.getRunCount());
+        assertEquals("true-true", log);
     }
 
     private void printFailures(List<Failure> failures) {
