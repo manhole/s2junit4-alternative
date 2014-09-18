@@ -4,10 +4,12 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -29,8 +31,11 @@ import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 import org.junit.runners.Parameterized;
+import org.seasar.framework.container.S2Container;
+import org.seasar.framework.unit.InternalTestContext;
 import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.Seasar2Test;
+import org.seasar.framework.unit.TestContext;
 import org.seasar.framework.unit.annotation.PostBindFields;
 import org.seasar.framework.unit.annotation.PreUnbindFields;
 import org.seasar.framework.unit.annotation.TxBehavior;
@@ -584,6 +589,70 @@ public class S2TestRuleTest {
         assertTrue(result.wasSuccessful());
         assertEquals(1, result.getRunCount());
         assertEquals("abc", log);
+    }
+
+    /**
+     *
+     */
+    @RunWith(Seasar2.class)
+    public static class FieldBindingTest {
+
+        private static List<Object> values = new ArrayList<Object>();
+
+        private S2Container container;
+
+        private InternalTestContext internalContext;
+
+        private TestContext context;
+
+        /**
+         *
+         */
+        public void beforeAaa() {
+            set();
+        }
+
+        /**
+         *
+         */
+        public void aaa() {
+            set();
+        }
+
+        /**
+         *
+         */
+        public void afterAaa() {
+            set();
+        }
+
+        private void set() {
+            values.add(container);
+            values.add(internalContext);
+            values.add(context);
+        }
+    }
+
+    /**
+     *
+     */
+    public void testFieldBindingTest() {
+        FieldBindingTest.values = new ArrayList<Object>();
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(FieldBindingTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        List<Object> values = FieldBindingTest.values;
+        assertEquals(9, values.size());
+        assertNull(values.get(0));
+        assertNull(values.get(1));
+        assertNotNull(values.get(2));
+        assertNotNull(values.get(3));
+        assertNotNull(values.get(4));
+        assertNotNull(values.get(5));
+        assertNull(values.get(6));
+        assertNull(values.get(7));
+        assertNull(values.get(8));
     }
 
     private void printFailures(List<Failure> failures) {
