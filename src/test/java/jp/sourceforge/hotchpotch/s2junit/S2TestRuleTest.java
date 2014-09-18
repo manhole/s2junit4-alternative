@@ -1,8 +1,10 @@
 package jp.sourceforge.hotchpotch.s2junit;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
@@ -451,11 +453,12 @@ public class S2TestRuleTest {
         // TODO rollbackすることをassertしたい
     }
 
-    /**
-     *
-     */
-    @RunWith(Seasar2.class)
+    // S2JUnit4とは異なり、Parameterizedを使う場合はRunWithに指定する必要がある。
+    @RunWith(Parameterized.class)
     public static class ParameterizedTest {
+
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
 
         /**
          * @return
@@ -470,18 +473,12 @@ public class S2TestRuleTest {
 
         private int b;
 
-        /**
-         * @param a
-         * @param b
-         */
         public ParameterizedTest(int a, int b) {
             this.a = a;
             this.b = b;
         }
 
-        /**
-         *
-         */
+        @Test
         public void aaa() {
             count++;
             log += a;
@@ -489,9 +486,7 @@ public class S2TestRuleTest {
         }
     }
 
-    /**
-     *
-     */
+    @Test
     public void testParameterizedTest() {
         JUnitCore core = new JUnitCore();
         Result result = core.run(ParameterizedTest.class);
@@ -509,6 +504,18 @@ public class S2TestRuleTest {
             System.out.println(failure.getTrace());
             System.out.println("<<< failure <<<");
         }
+    }
+
+    @Test
+    public void javaMethodName() {
+        assertThat(Character.isJavaIdentifierPart('a'), is(true));
+        assertThat(Character.isJavaIdentifierPart('2'), is(true));
+        assertThat(Character.isJavaIdentifierPart('['), is(false));
+        assertThat(Character.isJavaIdentifierPart(']'), is(false));
+
+        final S2TestRule o = new S2TestRule("dummy");
+        assertThat(o.javaMethodName("aaa"), is("aaa"));
+        assertThat(o.javaMethodName("aaa[0]"), is("aaa"));
     }
 
 }

@@ -52,7 +52,8 @@ public class S2TestRule implements TestRule {
     public Statement apply(final Statement base, final Description description) {
         this.base = base;
         introspector = new ConventionTestIntrospector();
-        this.method = findMethod(description.getMethodName());
+        final String methodName = javaMethodName(description.getMethodName());
+        this.method = findMethod(methodName);
 
         return new Statement() {
             @Override
@@ -65,6 +66,20 @@ public class S2TestRule implements TestRule {
                 }
             }
         };
+    }
+
+    /*
+     * Parameterized.TestClassRunnerForParametersでは、method名を"aaa[0]"のように添字を付けている。
+     */
+    String javaMethodName(final String methodName) {
+        final int length = methodName.length();
+        for (int i = 0; i < length; i++) {
+            final char c = methodName.charAt(i);
+            if (!Character.isJavaIdentifierPart(c)) {
+                return methodName.substring(0, i);
+            }
+        }
+        return methodName;
     }
 
     private Method findMethod(final String methodName) {
