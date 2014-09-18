@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -24,6 +26,7 @@ import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
+import org.junit.runners.Parameterized;
 import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.Seasar2Test;
 import org.seasar.framework.unit.annotation.PostBindFields;
@@ -446,6 +449,56 @@ public class S2TestRuleTest {
         assertEquals(1, count);
         assertEquals(true, txActive);
         // TODO rollbackすることをassertしたい
+    }
+
+    /**
+     *
+     */
+    @RunWith(Seasar2.class)
+    public static class ParameterizedTest {
+
+        /**
+         * @return
+         */
+        @Parameterized.Parameters
+        public static Collection<?> parameters() {
+            return Arrays
+                    .asList(new Object[][]{ { 1, 1 }, { 2, 4 }, { 3, 9 } });
+        }
+
+        private int a;
+
+        private int b;
+
+        /**
+         * @param a
+         * @param b
+         */
+        public ParameterizedTest(int a, int b) {
+            this.a = a;
+            this.b = b;
+        }
+
+        /**
+         *
+         */
+        public void aaa() {
+            count++;
+            log += a;
+            log += b;
+        }
+    }
+
+    /**
+     *
+     */
+    public void testParameterizedTest() {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(ParameterizedTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals(3, count);
+        assertEquals("112439", log);
     }
 
     private void printFailures(List<Failure> failures) {
