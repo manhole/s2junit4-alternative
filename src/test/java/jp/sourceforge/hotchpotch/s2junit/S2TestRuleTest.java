@@ -393,6 +393,34 @@ public class S2TestRuleTest {
         assertEquals(false, txActive);
     }
 
+    @RunWith(Seasar2.class)
+    @TxBehavior(TxBehaviorType.NONE)
+    public static class TransactionBehaviorCommitTest {
+
+        TransactionManager tm;
+
+        /**
+         *
+         */
+        @TxBehavior(TxBehaviorType.COMMIT)
+        public void bbb() {
+            count++;
+            txActive = TransactionManagerUtil.isActive(tm);
+        }
+    }
+
+    /**
+     *
+     */
+    public void testTransactionBehaviorCommitTest() {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(TransactionBehaviorCommitTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals(1, count);
+        assertEquals(true, txActive);
+    }
+
     private void printFailures(List<Failure> failures) {
         for (final Failure failure : failures) {
             System.out.println(">>> failure >>>");
