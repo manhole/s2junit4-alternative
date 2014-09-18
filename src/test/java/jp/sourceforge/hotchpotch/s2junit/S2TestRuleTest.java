@@ -48,6 +48,7 @@ import org.seasar.framework.unit.IBar;
 import org.seasar.framework.unit.IHoge;
 import org.seasar.framework.unit.InternalTestContext;
 import org.seasar.framework.unit.PreparationType;
+import org.seasar.framework.unit.S2TestMethodRunner;
 import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.Seasar2Test;
 import org.seasar.framework.unit.TestContext;
@@ -1237,6 +1238,34 @@ public class S2TestRuleTest {
         assertTrue(result.wasSuccessful());
         assertTrue(log, log.contains("a"));
         assertTrue(log, log.contains("b"));
+    }
+
+    @RunWith(Seasar2.class)
+    public static class SimpleInternalTestContextTest {
+
+        private S2Container container;
+
+        /**
+         *
+         */
+        public void aaa() {
+            assertNotNull(container);
+            count++;
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testSimpleInternalTestContext() throws Exception {
+        S2TestMethodRunner.s2junit4Path = SimpleInternalTestContextTest.class
+                .getName().replace(".", "/")
+                + ".s2junit4.dicon";
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(SimpleInternalTestContextTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals(1, count);
     }
 
     private void printFailures(List<Failure> failures) {
