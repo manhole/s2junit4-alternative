@@ -1134,32 +1134,36 @@ public class S2TestRuleTest {
         assertEquals("true", log);
     }
 
-    @RunWith(Seasar2.class)
     public static class BindEJB3ByTypeTest {
+
+        @Rule
+        public S2TestRule createRule() {
+            final S2TestRule rule = S2TestRule.create(this);
+            rule.setupTestContext(new TestContextSetup() {
+                @Override
+                public void setup(final TestContext testContext) {
+                    before();
+                }
+            });
+            return rule;
+        }
 
         TestContext testContext;
 
         @EJB
         private IBar zzz;
 
-        /**
-         *
-         */
         public void before() {
             testContext.register(Bar.class);
         }
 
-        /**
-         *
-         */
+        @Test
         public void aaa() {
             log += (zzz != null);
         }
     }
 
-    /**
-     * @throws Exception
-     */
+    @Test
     public void testBindEJB3ByType() throws Exception {
         JUnitCore core = new JUnitCore();
         Result result = core.run(BindEJB3ByTypeTest.class);
