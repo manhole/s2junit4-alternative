@@ -894,11 +894,10 @@ public class S2TestRuleTest {
         assertTrue(log.contains("e"));
     }
 
-    /**
-     *
-     */
-    @RunWith(Seasar2.class)
     public static class NonAutoPreparingTest {
+
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
 
         static int aaa_size;
 
@@ -910,39 +909,29 @@ public class S2TestRuleTest {
 
         private DataAccessor da;
 
-        /**
-         *
-         */
+        @Before
         @SuppressWarnings("deprecation")
         public void before() {
             ctx.setAutoPreparing(false);
         }
 
-        /**
-         *
-         */
+        @Test
         public void aaa() {
             aaa_size = da.readDbByTable("EMP").getRowSize();
         }
 
-        /**
-         *
-         */
+        @Test
         public void bbb() {
             bbb_size = da.readDbByTable("EMP").getRowSize();
         }
 
-        /**
-         *
-         */
+        @Test
         public void ccc() {
             ccc_size = da.readDbByTable("EMP").getRowSize();
         }
     }
 
-    /**
-     *
-     */
+    @Test
     public void testNonAutoPreparingTest() {
         NonAutoPreparingTest.aaa_size = 0;
         NonAutoPreparingTest.bbb_size = 0;
