@@ -32,6 +32,8 @@ import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 import org.junit.runners.Parameterized;
+import org.seasar.extension.dataset.DataSet;
+import org.seasar.extension.dataset.DataTable;
 import org.seasar.framework.container.S2Container;
 import org.seasar.framework.unit.DataAccessor;
 import org.seasar.framework.unit.InternalTestContext;
@@ -770,6 +772,50 @@ public class S2TestRuleTest {
         assertTrue(log.contains("b"));
         assertTrue(log.contains("c"));
         assertTrue(log.contains("d"));
+    }
+
+    /**
+     *
+     */
+    @RunWith(Seasar2.class)
+    public static class TrimStringTest {
+
+        private TestContext context;
+
+        private DataAccessor accessor;
+
+        /**
+         *
+         */
+        public void before() {
+            context.setTrimString(false);
+        }
+
+        /**
+         *
+         */
+        public void aaa() {
+            DataTable table = accessor.readDbByTable("EMP", "ENAME = ' '");
+            assertEquals(1, table.getRowSize());
+
+            DataSet dataSet = context.getExpected();
+            String value = (String) dataSet.getTable("EMP").getRow(0).getValue(
+                    "ENAME");
+            assertEquals(" ", value);
+
+            count++;
+        }
+    }
+
+    /**
+     *
+     */
+    public void testTrimStringTest() {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(TrimStringTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals(1, count);
     }
 
     private void printFailures(List<Failure> failures) {
