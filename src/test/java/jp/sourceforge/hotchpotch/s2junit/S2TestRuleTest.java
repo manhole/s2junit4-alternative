@@ -35,6 +35,7 @@ import org.junit.runners.Parameterized;
 import org.seasar.framework.container.S2Container;
 import org.seasar.framework.unit.DataAccessor;
 import org.seasar.framework.unit.InternalTestContext;
+import org.seasar.framework.unit.PreparationType;
 import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.Seasar2Test;
 import org.seasar.framework.unit.TestContext;
@@ -693,6 +694,101 @@ public class S2TestRuleTest {
         assertEquals(15, AutoPreparingTest.aaa_size);
         assertEquals(16, AutoPreparingTest.bbb_size);
         assertEquals(16, AutoPreparingTest.ccc_size);
+    }
+
+    @RunWith(Seasar2.class)
+    public static class PreparationTypeTest {
+
+        TestContext context;
+
+        DataAccessor da;
+
+        /**
+         *
+         */
+        public void defaultSetting() {
+            int size = da.readDbByTable("EMP").getRowSize();
+            assertEquals(16, size);
+        }
+
+        /**
+         *
+         */
+        public void beforeNone() {
+            context.setPreparationType(PreparationType.NONE);
+        }
+
+        /**
+         *
+         */
+        public void none() {
+            int size = da.readDbByTable("EMP").getRowSize();
+            assertEquals(14, size);
+            log += "a";
+        }
+
+        /**
+         *
+         */
+        public void beforeWrite() {
+            context.setPreparationType(PreparationType.WRITE);
+        }
+
+        /**
+         *
+         */
+        public void write() {
+            int size = da.readDbByTable("EMP").getRowSize();
+            assertEquals(16, size);
+            log += "b";
+        }
+
+        /**
+         *
+         */
+        public void beforeReplace() {
+            context.setPreparationType(PreparationType.REPLACE);
+        }
+
+        /**
+         *
+         */
+        public void replace() {
+            int size = da.readDbByTable("EMP").getRowSize();
+            assertEquals(15, size);
+            log += "c";
+        }
+
+        /**
+         *
+         */
+        public void beforeAllReplace() {
+            context.setPreparationType(PreparationType.ALL_REPLACE);
+        }
+
+        /**
+         *
+         */
+        public void allReplace() {
+            int size = da.readDbByTable("EMP").getRowSize();
+            assertEquals(2, size);
+            log += "d";
+        }
+
+    }
+
+    /**
+     *
+     */
+    public void testPreparationTypeTest() {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(PreparationTypeTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertTrue(log.contains("a"));
+        assertTrue(log.contains("b"));
+        assertTrue(log.contains("c"));
+        assertTrue(log.contains("d"));
     }
 
     private void printFailures(List<Failure> failures) {
