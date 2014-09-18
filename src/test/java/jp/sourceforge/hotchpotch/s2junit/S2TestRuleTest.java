@@ -41,9 +41,11 @@ import org.seasar.framework.container.S2Container;
 import org.seasar.framework.unit.DataAccessor;
 import org.seasar.framework.unit.Foo;
 import org.seasar.framework.unit.Hoge;
+import org.seasar.framework.unit.Hoge2;
 import org.seasar.framework.unit.IHoge;
 import org.seasar.framework.unit.InternalTestContext;
 import org.seasar.framework.unit.PreparationType;
+import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.Seasar2Test;
 import org.seasar.framework.unit.TestContext;
 import org.seasar.framework.unit.annotation.PostBindFields;
@@ -1088,6 +1090,41 @@ public class S2TestRuleTest {
         assertTrue(result.wasSuccessful());
         assertEquals(1, result.getRunCount());
         assertEquals("true-true", log);
+    }
+
+    @RunWith(Seasar2.class)
+    public static class BindEJB3ByBeanNameTest {
+
+        TestContext testContext;
+
+        @EJB(beanName = "xxx")
+        private IHoge yyy;
+
+        /**
+         *
+         */
+        public void before() {
+            testContext.register(Hoge2.class);
+        }
+
+        /**
+         *
+         */
+        public void aaa() {
+            log += (yyy != null);
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testBindEJB3ByBeanName() throws Exception {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(BindEJB3ByBeanNameTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals(1, result.getRunCount());
+        assertEquals("true", log);
     }
 
     private void printFailures(List<Failure> failures) {
