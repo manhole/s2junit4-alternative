@@ -1308,30 +1308,34 @@ public class S2TestRuleTest {
         assertTrue(log.contains("b"));
     }
 
-    @RunWith(Seasar2.class)
     public static class PublishedTestContextTest {
 
-        private MyTestContext context;
+        @Rule
+        public S2TestRule createRule() {
+            final S2TestRule rule = S2TestRule.create(this);
+            rule.setupTestContext(new TestContextSetup() {
+                @Override
+                public void setup(final TestContext testContext) {
+                    before();
+                }
+            });
+            return rule;
+        }
 
-        /**
-         *
-         */
+        private Seasar2Test.MyTestContext context;
+
         public void before() {
             log += context != null;
         }
 
-        /**
-         *
-         */
+        @Test
         public void aaa() {
         }
     }
 
-    /**
-     * @throws Exception
-     */
+    @Test
     public void testPublishedTestContext() throws Exception {
-        S2TestMethodRunner.s2junit4Path = PublishedTestContextTest.class
+        S2TestRule.s2junit4Path = PublishedTestContextTest.class
                 .getName().replace(".", "/")
                 + ".s2junit4.dicon";
         JUnitCore core = new JUnitCore();
