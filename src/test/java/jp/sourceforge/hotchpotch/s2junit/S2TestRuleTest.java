@@ -1205,25 +1205,23 @@ public class S2TestRuleTest {
     // TODO Mockテスト群
 
 
-    @RunWith(Seasar2.class)
     @RootDicon("aop.dicon")
     public static class RootDiconTest {
 
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
+
         private S2Container container;
 
-        /**
-         *
-         */
+        @Test
         public void aaa() {
             assertEquals(container.getRoot(), container);
             assertEquals("aop.dicon", container.getPath());
             log += "a";
         }
 
-        /**
-         *
-         */
         @RootDicon("jdbc.dicon")
+        @Test
         public void bbb() {
             assertEquals(container.getRoot(), container);
             assertEquals("jdbc.dicon", container.getPath());
@@ -1231,9 +1229,7 @@ public class S2TestRuleTest {
         }
     }
 
-    /**
-     * @throws Exception
-     */
+    @Test
     public void testRootDicon() throws Exception {
         JUnitCore core = new JUnitCore();
         Result result = core.run(RootDiconTest.class);
