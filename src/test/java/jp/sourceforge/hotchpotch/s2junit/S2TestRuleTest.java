@@ -53,6 +53,7 @@ import org.seasar.framework.unit.Seasar2Test;
 import org.seasar.framework.unit.TestContext;
 import org.seasar.framework.unit.annotation.PostBindFields;
 import org.seasar.framework.unit.annotation.PreUnbindFields;
+import org.seasar.framework.unit.annotation.RootDicon;
 import org.seasar.framework.unit.annotation.TxBehavior;
 import org.seasar.framework.unit.annotation.TxBehaviorType;
 import org.seasar.framework.util.TransactionManagerUtil;
@@ -1197,7 +1198,50 @@ public class S2TestRuleTest {
         assertEquals("env_ut.txtut", log);
     }
 
+
+    // TODO WarmDeployテスト群
+
+
     // TODO Mockテスト群
+
+
+    @RunWith(Seasar2.class)
+    @RootDicon("aop.dicon")
+    public static class RootDiconTest {
+
+        private S2Container container;
+
+        /**
+         *
+         */
+        public void aaa() {
+            assertEquals(container.getRoot(), container);
+            assertEquals("aop.dicon", container.getPath());
+            log += "a";
+        }
+
+        /**
+         *
+         */
+        @RootDicon("jdbc.dicon")
+        public void bbb() {
+            assertEquals(container.getRoot(), container);
+            assertEquals("jdbc.dicon", container.getPath());
+            log += "b";
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testRootDicon() throws Exception {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(RootDiconTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertTrue(log, log.contains("a"));
+        assertTrue(log, log.contains("b"));
+    }
 
     private void printFailures(List<Failure> failures) {
         for (final Failure failure : failures) {
