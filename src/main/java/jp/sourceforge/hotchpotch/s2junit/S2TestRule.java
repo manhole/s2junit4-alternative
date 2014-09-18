@@ -19,6 +19,7 @@ import org.seasar.framework.container.factory.SingletonS2ContainerFactory;
 import org.seasar.framework.container.impl.S2ContainerBehavior;
 import org.seasar.framework.convention.NamingConvention;
 import org.seasar.framework.convention.impl.NamingConventionImpl;
+import org.seasar.framework.exception.NoSuchMethodRuntimeException;
 import org.seasar.framework.unit.EasyMockSupport;
 import org.seasar.framework.unit.InternalTestContext;
 import org.seasar.framework.unit.S2TestIntrospector;
@@ -167,6 +168,7 @@ public class S2TestRule implements TestRule {
         } catch (final Throwable th) {
             throw new AssertionError(th);
         }
+        runEachBefore();
         initContainer();
         bindFields();
     }
@@ -179,6 +181,7 @@ public class S2TestRule implements TestRule {
         }
 
         testContext.destroyContainer();
+        runEachAfter();
         try {
             tearDownTestContext();
         } catch (final Throwable th) {
@@ -304,6 +307,37 @@ public class S2TestRule implements TestRule {
         originalClassLoader = null;
     }
 
+    protected void runEachBefore() {
+        try {
+            final Method eachBefore = introspector.getEachBeforeMethod(
+                    testClass, method);
+            if (eachBefore != null) {
+                invokeMethod(eachBefore);
+            }
+        } catch (final Throwable e) {
+            // TODO
+            throw new AssertionError(e);
+        }
+        easyMockSupport.bindMockFields(test, testContext.getContainer());
+    }
+
+    /**
+     * テストケース個別の解放メソッドを実行します。
+     */
+    protected void runEachAfter() {
+        easyMockSupport.unbindMockFields(test);
+        try {
+            final Method eachAfter = introspector.getEachAfterMethod(testClass,
+                    method);
+            if (eachAfter != null) {
+                invokeMethod(eachAfter);
+            }
+        } catch (final Throwable e) {
+            // TODO
+            throw new AssertionError(e);
+        }
+    }
+
     protected void initContainer() {
         testContext.include();
         introspector.createMock(method, test, testContext);
@@ -400,6 +434,13 @@ public class S2TestRule implements TestRule {
         S2Container container = S2ContainerFactory.create(rootDicon);
         S2ContainerFactory.include(container, s2junit4Path);
         return container;
+    }
+
+    protected void invokeMethod(final Method method) throws Throwable {
+        try {
+            ReflectionUtil.invoke(method, test);
+        } catch (NoSuchMethodRuntimeException ignore) {
+        }
     }
 
     protected void unbindFields() throws Throwable {
