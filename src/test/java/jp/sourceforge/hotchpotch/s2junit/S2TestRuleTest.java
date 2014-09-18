@@ -1372,20 +1372,16 @@ public class S2TestRuleTest {
 
     // TODO configure,Seasar2をカスタマイズするテスト群
 
-    @RunWith(Seasar2.class)
     public static class CustomizeSeasar2Test {
 
-        /**
-         *
-         */
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
+
         public void aaa() {
             log += "a";
             count++;
         }
 
-        /**
-         *
-         */
         public void beforeBbb() {
             log += "b";
             count++;
@@ -1401,9 +1397,13 @@ public class S2TestRuleTest {
         }
     }
 
-    /**
+    /*
+     * Seasar2.delegate(Runner)を差し替えているが、
+     * TestRuleベースではその差し替えはしないので、Ignoreする。
      *
      */
+    @Ignore
+    @Test
     public void testCustomizeSeasar2Test() {
         configure("Seasar2.dicon");
         JUnitCore core = new JUnitCore();
@@ -1414,6 +1414,7 @@ public class S2TestRuleTest {
         assertEquals("c", log);
     }
 
+    // "s2junit4config.dicon" を差し替える用途かな?
     private void configure(String name) {
         String path = getClass().getName().replace('.', '/') + "." + name;
         Seasar2.configure(path);
