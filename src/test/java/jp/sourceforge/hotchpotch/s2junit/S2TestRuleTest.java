@@ -393,15 +393,15 @@ public class S2TestRuleTest {
         assertEquals(false, txActive);
     }
 
-    @RunWith(Seasar2.class)
     @TxBehavior(TxBehaviorType.NONE)
     public static class TransactionBehaviorCommitTest {
 
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
+
         TransactionManager tm;
 
-        /**
-         *
-         */
+        @Test
         @TxBehavior(TxBehaviorType.COMMIT)
         public void bbb() {
             count++;
@@ -409,9 +409,7 @@ public class S2TestRuleTest {
         }
     }
 
-    /**
-     *
-     */
+    @Test
     public void testTransactionBehaviorCommitTest() {
         JUnitCore core = new JUnitCore();
         Result result = core.run(TransactionBehaviorCommitTest.class);
