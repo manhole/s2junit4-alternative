@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 import org.junit.runners.Parameterized;
 import org.seasar.framework.container.S2Container;
+import org.seasar.framework.unit.DataAccessor;
 import org.seasar.framework.unit.InternalTestContext;
 import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.Seasar2Test;
@@ -649,6 +650,58 @@ public class S2TestRuleTest {
         assertNull(values.get(6));
         assertNull(values.get(7));
         assertNull(values.get(8));
+    }
+
+    /**
+     *
+     */
+    @RunWith(Seasar2.class)
+    public static class AutoPreparingTest {
+
+        static int aaa_size;
+
+        static int bbb_size;
+
+        static int ccc_size;
+
+        DataAccessor da;
+
+        /**
+         *
+         */
+        public void aaa() {
+            aaa_size = da.readDbByTable("EMP").getRowSize();
+        }
+
+        /**
+         *
+         */
+        public void bbb() {
+            bbb_size = da.readDbByTable("EMP").getRowSize();
+        }
+
+        /**
+         *
+         */
+        public void ccc() {
+            ccc_size = da.readDbByTable("EMP").getRowSize();
+        }
+    }
+
+    /**
+     *
+     */
+    public void testAutoPreparingTest() {
+        AutoPreparingTest.aaa_size = 0;
+        AutoPreparingTest.bbb_size = 0;
+        AutoPreparingTest.ccc_size = 0;
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(AutoPreparingTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals(15, AutoPreparingTest.aaa_size);
+        assertEquals(16, AutoPreparingTest.bbb_size);
+        assertEquals(16, AutoPreparingTest.ccc_size);
     }
 
     private void printFailures(List<Failure> failures) {
