@@ -417,17 +417,18 @@ public class S2TestRuleTest {
         assertTrue(result.wasSuccessful());
         assertEquals(1, count);
         assertEquals(true, txActive);
+        // TODO commitすることをassertしたい
     }
 
-    @RunWith(Seasar2.class)
     @TxBehavior(TxBehaviorType.NONE)
     public static class TransactionBehaviorRollbackTest {
 
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
+
         TransactionManager tm;
 
-        /**
-         *
-         */
+        @Test
         @TxBehavior(TxBehaviorType.ROLLBACK)
         public void bbb() {
             count++;
@@ -436,9 +437,7 @@ public class S2TestRuleTest {
 
     }
 
-    /**
-     *
-     */
+    @Test
     public void testTransactionBehaviorRollbackTest() {
         JUnitCore core = new JUnitCore();
         Result result = core.run(TransactionBehaviorRollbackTest.class);
@@ -446,6 +445,7 @@ public class S2TestRuleTest {
         assertTrue(result.wasSuccessful());
         assertEquals(1, count);
         assertEquals(true, txActive);
+        // TODO rollbackすることをassertしたい
     }
 
     private void printFailures(List<Failure> failures) {
