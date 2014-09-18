@@ -1346,23 +1346,21 @@ public class S2TestRuleTest {
         assertEquals("true", log);
     }
 
-    @RunWith(Seasar2.class)
     public static class MockHttpServletRequestTest {
+
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
 
         private MockHttpServletRequest request;
 
-        /**
-         *
-         */
+        @Test
         public void aaa() {
             assertNotNull(request);
             log += "a";
         }
     }
 
-    /**
-     * @throws Exception
-     */
+    @Test
     public void testMockHttpServletRequest() throws Exception {
         JUnitCore core = new JUnitCore();
         Result result = core.run(MockHttpServletRequestTest.class);
