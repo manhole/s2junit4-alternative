@@ -3,6 +3,7 @@ package jp.sourceforge.hotchpotch.s2junit;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.TransactionManager;
@@ -61,17 +62,102 @@ public class S2TestRule implements TestRule {
         final String methodName = javaMethodName(description.getMethodName());
         this.method = findMethod(methodName);
 
+        final Steps steps = setupSteps();
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                before();
-                try {
-                    S2TestRule.this.evaluate(base);
-                } finally {
-                    after();
-                }
+                steps.run();
             }
         };
+    }
+
+    private Steps setupSteps() {
+        final Steps steps = new Steps();
+        steps.enqueue(new StepSkeleton() {
+            @Override
+            protected void before() throws Throwable {
+                Env.setFilePath(Seasar2.ENV_PATH);
+                Env.setValueIfAbsent(Seasar2.ENV_VALUE);
+            }
+
+            @Override
+            protected void after() {
+                Env.initialize();
+            }
+        });
+
+        steps.enqueue(new StepSkeleton() {
+            @Override
+            protected void before() throws Throwable {
+                setUpTestContext();
+            }
+
+            @Override
+            protected void after() {
+                tearDownTestContext();
+            }
+        });
+
+        steps.enqueue(new StepSkeleton() {
+            @Override
+            protected void before() throws Throwable {
+                runEachBefore();
+            }
+
+            @Override
+            protected void after() {
+                runEachAfter();
+            }
+        });
+
+        steps.enqueue(new StepSkeleton() {
+            @Override
+            protected void before() throws Throwable {
+                initContainer();
+            }
+
+            @Override
+            protected void after() {
+                destroyContainer();
+            }
+        });
+
+        steps.enqueue(new StepSkeleton() {
+            @Override
+            protected void before() throws Throwable {
+                testContext.registerColumnTypes();
+            }
+
+            @Override
+            protected void after() {
+                testContext.revertColumnTypes();
+            }
+        });
+
+        steps.enqueue(new StepSkeleton() {
+            @Override
+            protected void before() throws Throwable {
+                bindFields();
+            }
+
+            @Override
+            protected void after() {
+                try {
+                    unbindFields();
+                } catch (final Throwable th) {
+                    throw new AssertionError(th);
+                }
+            }
+        });
+
+        steps.enqueue(new Step() {
+            @Override
+            public void step(final Completion completion) throws Throwable {
+                runTest();
+                completion.complete();
+            }
+        });
+        return steps;
     }
 
     /*
@@ -139,45 +225,6 @@ public class S2TestRule implements TestRule {
 
     protected void executeMethod() throws Throwable {
         base.evaluate();
-    }
-
-    protected void evaluate(final Statement base) throws Throwable {
-        //base.evaluate();
-        runTest();
-    }
-
-    protected void before() throws Throwable {
-        Env.setFilePath(Seasar2.ENV_PATH);
-        Env.setValueIfAbsent(Seasar2.ENV_VALUE);
-
-        try {
-            setUpTestContext();
-        } catch (final Throwable th) {
-            throw new AssertionError(th);
-        }
-        runEachBefore();
-        initContainer();
-        testContext.registerColumnTypes();
-        bindFields();
-    }
-
-    protected void after() {
-        try {
-            unbindFields();
-        } catch (final Throwable th) {
-            throw new AssertionError(th);
-        }
-
-        testContext.revertColumnTypes();
-        testContext.destroyContainer();
-        runEachAfter();
-        try {
-            tearDownTestContext();
-        } catch (final Throwable th) {
-            throw new AssertionError(th);
-        }
-
-        Env.initialize();
     }
 
     /**
@@ -290,7 +337,7 @@ public class S2TestRule implements TestRule {
         }
     }
 
-    protected void tearDownTestContext() throws Throwable {
+    protected void tearDownTestContext() {
         testContext = null;
         DisposableUtil.dispose();
         S2ContainerBehavior
@@ -335,6 +382,10 @@ public class S2TestRule implements TestRule {
         testContext.include();
         introspector.createMock(method, test, testContext);
         testContext.initContainer();
+    }
+
+    protected void destroyContainer() {
+        testContext.destroyContainer();
     }
 
     protected void bindFields() throws Throwable {
@@ -464,6 +515,61 @@ public class S2TestRule implements TestRule {
 
     public void setupTestContext(final TestContextSetup setup) {
         this.testContextSetup = setup;
+    }
+
+    static class Steps {
+
+        private List<Step> steps = new ArrayList<Step>();
+        private int position = -1;
+        private final Completion completion = new Completion() {
+            @Override
+            public void complete() throws Throwable {
+                nextStep();
+            }
+        };
+
+        public void enqueue(final Step step) {
+            steps.add(step);
+        }
+
+        public void run() throws Throwable {
+            nextStep();
+        }
+
+        protected void nextStep() throws Throwable {
+            position++;
+            if (position < steps.size()) {
+                final Step step = steps.get(position);
+                step.step(completion);
+            }
+        }
+
+    }
+
+    static interface Completion {
+        void complete() throws Throwable;
+    }
+
+    static interface Step {
+        void step(Completion completion) throws Throwable;
+    }
+
+    abstract static class StepSkeleton implements Step {
+
+        @Override
+        public void step(final Completion completion) throws Throwable {
+            before();
+            try {
+                completion.complete();
+            } finally {
+                after();
+            }
+        }
+
+        abstract protected void before() throws Throwable;
+
+        abstract protected void after();
+
     }
 
 }
