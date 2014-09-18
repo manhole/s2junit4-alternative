@@ -27,6 +27,7 @@ import org.seasar.framework.unit.UnitClassLoader;
 import org.seasar.framework.unit.annotation.PublishedTestContext;
 import org.seasar.framework.unit.impl.ConventionTestIntrospector;
 import org.seasar.framework.util.DisposableUtil;
+import org.seasar.framework.util.ResourceUtil;
 import org.seasar.framework.util.StringUtil;
 import org.seasar.framework.util.tiger.CollectionsUtil;
 import org.seasar.framework.util.tiger.ReflectionUtil;
@@ -38,6 +39,8 @@ public class S2TestRule implements TestRule {
 
     private final BeanDesc beanDesc;
     private Statement base;
+
+    private Boolean autoIncluding;
 
     public S2TestRule(final Object testInstance) {
         this.test = testInstance;
@@ -259,10 +262,9 @@ public class S2TestRule implements TestRule {
         originalClassLoader = getOriginalClassLoader();
         unitClassLoader = new UnitClassLoader(originalClassLoader);
         Thread.currentThread().setContextClassLoader(unitClassLoader);
-        // TODO warmDeployは不要で良いかな
-//        if (needsWarmDeploy()) {
-//            S2ContainerFactory.configure("warmdeploy.dicon");
-//        }
+        if (needsWarmDeploy()) {
+            S2ContainerFactory.configure("warmdeploy.dicon");
+        }
         final S2Container container = createRootContainer();
         SingletonS2ContainerFactory.setContainer(container);
         testContext = InternalTestContext.class.cast(container
@@ -274,6 +276,9 @@ public class S2TestRule implements TestRule {
             final NamingConvention namingConvention = new NamingConventionImpl();
             testContext.register(namingConvention);
             testContext.setNamingConvention(namingConvention);
+        }
+        if (autoIncluding != null) {
+            testContext.setAutoIncluding(autoIncluding);
         }
 
         for (Class<?> clazz = testClass; clazz != Object.class; clazz = clazz
@@ -459,6 +464,18 @@ public class S2TestRule implements TestRule {
             }
         }
         boundFields = null;
+    }
+
+    protected boolean needsWarmDeploy() {
+        return introspector.needsWarmDeploy(testClass, method)
+                && !ResourceUtil.isExist("s2container.dicon")
+                && ResourceUtil.isExist("convention.dicon")
+                && ResourceUtil.isExist("creator.dicon")
+                && ResourceUtil.isExist("customizer.dicon");
+    }
+
+    public void setAutoIncluding(final Boolean autoIncluding) {
+        this.autoIncluding = autoIncluding;
     }
 
 }

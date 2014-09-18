@@ -40,7 +40,6 @@ import org.seasar.framework.container.S2Container;
 import org.seasar.framework.unit.DataAccessor;
 import org.seasar.framework.unit.InternalTestContext;
 import org.seasar.framework.unit.PreparationType;
-import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.Seasar2Test;
 import org.seasar.framework.unit.TestContext;
 import org.seasar.framework.unit.annotation.PostBindFields;
@@ -967,34 +966,43 @@ public class S2TestRuleTest {
         assertEquals("aaa", log);
     }
 
-    @RunWith(Seasar2.class)
     @TxBehavior(TxBehaviorType.NONE)
     public static class NonAutoIncludingTest {
+
+        // RuleはfieldだけでなくメソッドでJUnit4へ返すことも可能。
+        @Rule
+        public S2TestRule createRule() {
+            final S2TestRule rule = S2TestRule.create(this);
+            rule.setAutoIncluding(false);
+            return rule;
+        }
 
         private TestContext ctx;
 
         private S2Container container;
 
-        /**
+        /*
+         * NOTE: beforeのタイミングが後ろに変わったため、ここでsetAutoIncludingしても遅い。
          *
+         * S2JUnit4(S2TestMethodRunner)では、before → initContainerという順序だったが、
+         * TestRuleベースの実装に変えたことで initContainer → before という順序に変わった。
+         * setAutoIncludingはinitContainerの時点で必要。
          */
-        public void before() {
-            ctx.setAutoIncluding(false);
-        }
+//        @Before
+//        public void before() {
+//            ctx.setAutoIncluding(false);
+//        }
 
-        /**
-         *
-         */
+        @Test
         public void aaa() {
             log += container.hasComponentDef("hoge");
             log += "-";
             log += container.hasComponentDef(TransactionManager.class);
         }
+
     }
 
-    /**
-     *
-     */
+    @Test
     public void testNonAutoIncludingTest() {
         JUnitCore core = new JUnitCore();
         Result result = core.run(NonAutoIncludingTest.class);
