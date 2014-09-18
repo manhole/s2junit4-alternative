@@ -38,6 +38,7 @@ import org.seasar.extension.dataset.DataTable;
 import org.seasar.extension.dataset.types.ColumnTypes;
 import org.seasar.extension.unit.BeanReader;
 import org.seasar.framework.container.S2Container;
+import org.seasar.framework.env.Env;
 import org.seasar.framework.unit.Bar;
 import org.seasar.framework.unit.DataAccessor;
 import org.seasar.framework.unit.Foo;
@@ -1172,6 +1173,33 @@ public class S2TestRuleTest {
         assertEquals(1, result.getRunCount());
         assertEquals("true", log);
     }
+
+    // TODO Prerequisiteテスト群
+
+    @RunWith(Seasar2.class)
+    public static class EnvTest {
+
+        /**
+         *
+         */
+        public void env() {
+            log += Env.getFilePath();
+            log += Env.getValue();
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testEnv() throws Exception {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(EnvTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals("env_ut.txtut", log);
+    }
+
+    // TODO Mockテスト群
 
     private void printFailures(List<Failure> failures) {
         for (final Failure failure : failures) {
