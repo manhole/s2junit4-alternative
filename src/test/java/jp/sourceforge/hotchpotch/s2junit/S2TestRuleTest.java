@@ -1,6 +1,7 @@
 package jp.sourceforge.hotchpotch.s2junit;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -611,6 +612,9 @@ public class S2TestRuleTest {
         @Test
         public void aaa() {
             set();
+            assertThat(container, is(notNullValue()));
+            assertThat(internalContext, is(notNullValue()));
+            assertThat(context, is(notNullValue()));
         }
 
         public void afterAaa() {
