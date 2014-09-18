@@ -894,6 +894,68 @@ public class S2TestRuleTest {
         assertTrue(log.contains("e"));
     }
 
+    /**
+     *
+     */
+    @RunWith(Seasar2.class)
+    public static class NonAutoPreparingTest {
+
+        static int aaa_size;
+
+        static int bbb_size;
+
+        static int ccc_size;
+
+        private TestContext ctx;
+
+        private DataAccessor da;
+
+        /**
+         *
+         */
+        @SuppressWarnings("deprecation")
+        public void before() {
+            ctx.setAutoPreparing(false);
+        }
+
+        /**
+         *
+         */
+        public void aaa() {
+            aaa_size = da.readDbByTable("EMP").getRowSize();
+        }
+
+        /**
+         *
+         */
+        public void bbb() {
+            bbb_size = da.readDbByTable("EMP").getRowSize();
+        }
+
+        /**
+         *
+         */
+        public void ccc() {
+            ccc_size = da.readDbByTable("EMP").getRowSize();
+        }
+    }
+
+    /**
+     *
+     */
+    public void testNonAutoPreparingTest() {
+        NonAutoPreparingTest.aaa_size = 0;
+        NonAutoPreparingTest.bbb_size = 0;
+        NonAutoPreparingTest.ccc_size = 0;
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(NonAutoPreparingTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals(14, NonAutoPreparingTest.aaa_size);
+        assertEquals(14, NonAutoPreparingTest.bbb_size);
+        assertEquals(14, NonAutoPreparingTest.ccc_size);
+    }
+
     private void printFailures(List<Failure> failures) {
         for (final Failure failure : failures) {
             System.out.println(">>> failure >>>");
