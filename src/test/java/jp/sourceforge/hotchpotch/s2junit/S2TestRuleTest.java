@@ -41,6 +41,7 @@ import org.seasar.extension.unit.BeanReader;
 import org.seasar.framework.container.S2Container;
 import org.seasar.framework.convention.NamingConvention;
 import org.seasar.framework.env.Env;
+import org.seasar.framework.mock.servlet.MockHttpServletRequest;
 import org.seasar.framework.unit.Bar;
 import org.seasar.framework.unit.DataAccessor;
 import org.seasar.framework.unit.Foo;
@@ -1343,6 +1344,31 @@ public class S2TestRuleTest {
         printFailures(result.getFailures());
         assertTrue(result.wasSuccessful());
         assertEquals("true", log);
+    }
+
+    @RunWith(Seasar2.class)
+    public static class MockHttpServletRequestTest {
+
+        private MockHttpServletRequest request;
+
+        /**
+         *
+         */
+        public void aaa() {
+            assertNotNull(request);
+            log += "a";
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testMockHttpServletRequest() throws Exception {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(MockHttpServletRequestTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals("a", log);
     }
 
     private void printFailures(List<Failure> failures) {
