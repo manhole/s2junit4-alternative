@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -38,6 +39,7 @@ import org.seasar.extension.dataset.DataTable;
 import org.seasar.extension.dataset.types.ColumnTypes;
 import org.seasar.extension.unit.BeanReader;
 import org.seasar.framework.container.S2Container;
+import org.seasar.framework.convention.NamingConvention;
 import org.seasar.framework.env.Env;
 import org.seasar.framework.unit.Bar;
 import org.seasar.framework.unit.DataAccessor;
@@ -53,6 +55,7 @@ import org.seasar.framework.unit.Seasar2Test;
 import org.seasar.framework.unit.TestContext;
 import org.seasar.framework.unit.annotation.PostBindFields;
 import org.seasar.framework.unit.annotation.PreUnbindFields;
+import org.seasar.framework.unit.annotation.RegisterNamingConvention;
 import org.seasar.framework.unit.annotation.RootDicon;
 import org.seasar.framework.unit.annotation.TxBehavior;
 import org.seasar.framework.unit.annotation.TxBehaviorType;
@@ -1262,6 +1265,54 @@ public class S2TestRuleTest {
         printFailures(result.getFailures());
         assertTrue(result.wasSuccessful());
         assertEquals(1, count);
+    }
+
+    @RunWith(Seasar2.class)
+    public static class NamingConventionTest {
+
+        private TestContext context;
+
+        private NamingConvention namingConvention;
+
+        /**
+         *
+         */
+        @RootDicon("org/seasar/framework/unit/Seasar2Test_convention.dicon")
+        public void aaa() {
+            assertEquals("/", namingConvention.getViewRootPath());
+            assertEquals(".htm", namingConvention.getViewExtension());
+            log += "a";
+        }
+
+        /**
+         *
+         */
+        public void beforeBbb() {
+            context.setAutoIncluding(false);
+        }
+
+        /**
+         *
+         */
+        @RegisterNamingConvention(false)
+        public void bbb() {
+            assertNull(namingConvention);
+            context.register(HashMap.class);
+            log += "b";
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testNamingConvention() throws Exception {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(NamingConventionTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals(2, log.length());
+        assertTrue(log.contains("a"));
+        assertTrue(log.contains("b"));
     }
 
     private void printFailures(List<Failure> failures) {
