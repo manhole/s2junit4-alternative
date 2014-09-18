@@ -756,9 +756,6 @@ public class S2TestRuleTest {
 
     }
 
-    // テスト命名規約でのテストメソッド判定はサポートしないことにする。
-    // ただしbeforeXxx, afterXxxは、代替アノテーションが存在しないため移植対象とするかも。
-    @Ignore
     @Test
     public void testPreparationTypeTest() {
         JUnitCore core = new JUnitCore();
