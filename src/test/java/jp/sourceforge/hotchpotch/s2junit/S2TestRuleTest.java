@@ -10,6 +10,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,6 +35,8 @@ import org.junit.runner.notification.Failure;
 import org.junit.runners.Parameterized;
 import org.seasar.extension.dataset.DataSet;
 import org.seasar.extension.dataset.DataTable;
+import org.seasar.extension.dataset.types.ColumnTypes;
+import org.seasar.extension.unit.BeanReader;
 import org.seasar.framework.container.S2Container;
 import org.seasar.framework.unit.DataAccessor;
 import org.seasar.framework.unit.InternalTestContext;
@@ -809,6 +812,130 @@ public class S2TestRuleTest {
         printFailures(result.getFailures());
         assertTrue(result.wasSuccessful());
         assertEquals(1, count);
+    }
+
+    @RunWith(Seasar2.class)
+    public static class TrimStringBeanReaderTest {
+
+        private TestContext context;
+
+        /**
+         *
+         */
+        public void beforeAaa() {
+            context.setTrimString(true);
+        }
+
+        /**
+         *
+         */
+        public void aaa() {
+            DataSet dataSet = new BeanReader(new Emp("hoge   ")).read();
+            String actual = (String) dataSet.getTable(0).getRow(0).getValue(0);
+            assertEquals("hoge", actual);
+            log += "a";
+        }
+
+        /**
+         *
+         */
+        public void beforeBbb() {
+            context.setTrimString(false);
+        }
+
+        /**
+         *
+         */
+        public void bbb() {
+            DataSet dataSet = new BeanReader(new Emp("hoge   ")).read();
+            Object actual = dataSet.getTable(0).getRow(0).getValue(0);
+            assertEquals("hoge   ", actual);
+            log += "b";
+        }
+
+        /**
+         *
+         */
+        public void beforeCcc() {
+            context.setTrimString(false);
+
+            assertEquals(ColumnTypes.STRING, ColumnTypes
+                    .getColumnType(String.class));
+            assertEquals(ColumnTypes.STRING, ColumnTypes
+                    .getColumnType(Types.CHAR));
+            assertEquals(ColumnTypes.STRING, ColumnTypes
+                    .getColumnType(Types.LONGVARCHAR));
+            assertEquals(ColumnTypes.STRING, ColumnTypes
+                    .getColumnType(Types.VARCHAR));
+            log += "c";
+        }
+
+        /**
+         *
+         */
+        public void ccc() {
+            assertEquals(ColumnTypes.NOT_TRIM_STRING, ColumnTypes
+                    .getColumnType(String.class));
+            assertEquals(ColumnTypes.NOT_TRIM_STRING, ColumnTypes
+                    .getColumnType(Types.CHAR));
+            assertEquals(ColumnTypes.NOT_TRIM_STRING, ColumnTypes
+                    .getColumnType(Types.LONGVARCHAR));
+            assertEquals(ColumnTypes.NOT_TRIM_STRING, ColumnTypes
+                    .getColumnType(Types.VARCHAR));
+            log += "d";
+        }
+
+        /**
+         *
+         */
+        public void AfterCcc() {
+            assertEquals(ColumnTypes.STRING, ColumnTypes
+                    .getColumnType(String.class));
+            assertEquals(ColumnTypes.STRING, ColumnTypes
+                    .getColumnType(Types.CHAR));
+            assertEquals(ColumnTypes.STRING, ColumnTypes
+                    .getColumnType(Types.LONGVARCHAR));
+            assertEquals(ColumnTypes.STRING, ColumnTypes
+                    .getColumnType(Types.VARCHAR));
+            log += "e";
+        }
+    }
+
+    /**
+     *
+     */
+    public static class Emp {
+
+        private String name;
+
+        /**
+         * @param name
+         */
+        public Emp(String name) {
+            this.name = name;
+        }
+
+        /**
+         * @return
+         */
+        public String getName() {
+            return name;
+        }
+    }
+
+    /**
+     *
+     */
+    public void testTrimStringBeanReaderTest() {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(TrimStringBeanReaderTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertTrue(log.contains("a"));
+        assertTrue(log.contains("b"));
+        assertTrue(log.contains("c"));
+        assertTrue(log.contains("d"));
+        assertTrue(log.contains("e"));
     }
 
     private void printFailures(List<Failure> failures) {
