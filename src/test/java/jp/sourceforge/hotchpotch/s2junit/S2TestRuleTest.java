@@ -48,7 +48,6 @@ import org.seasar.framework.unit.IBar;
 import org.seasar.framework.unit.IHoge;
 import org.seasar.framework.unit.InternalTestContext;
 import org.seasar.framework.unit.PreparationType;
-import org.seasar.framework.unit.S2TestMethodRunner;
 import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.Seasar2Test;
 import org.seasar.framework.unit.TestContext;
@@ -81,8 +80,7 @@ public class S2TestRuleTest {
     @After
     public void tearDown() {
         //Seasar2.dispose();
-        // TODO packageが異なるので呼べない...
-        //S2TestMethodRunner.s2junit4Path = S2TestMethodRunner.DEFAULT_S2JUNIT4_PATH;
+        S2TestRule.s2junit4Path = S2TestRule.DEFAULT_S2JUNIT4_PATH;
     }
 
     public static class FilterTest {
@@ -1240,25 +1238,23 @@ public class S2TestRuleTest {
         assertTrue(log, log.contains("b"));
     }
 
-    @RunWith(Seasar2.class)
     public static class SimpleInternalTestContextTest {
+
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
 
         private S2Container container;
 
-        /**
-         *
-         */
+        @Test
         public void aaa() {
             assertNotNull(container);
             count++;
         }
     }
 
-    /**
-     * @throws Exception
-     */
+    @Test
     public void testSimpleInternalTestContext() throws Exception {
-        S2TestMethodRunner.s2junit4Path = SimpleInternalTestContextTest.class
+        S2TestRule.s2junit4Path = SimpleInternalTestContextTest.class
                 .getName().replace(".", "/")
                 + ".s2junit4.dicon";
         JUnitCore core = new JUnitCore();
