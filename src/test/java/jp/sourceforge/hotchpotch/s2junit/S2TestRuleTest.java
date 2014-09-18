@@ -554,6 +554,46 @@ public class S2TestRuleTest {
         assertEquals("@RunWith(Parameterized.class)と同じ結果になるはず", "ac(0:1,1)dc(1:2,4)dc(2:3,9)db", log);
     }
 
+    /**
+     *
+     */
+    @RunWith(Seasar2.class)
+    public static class EachBeforeAndEachAfterTest {
+
+        /**
+         *
+         */
+        public void beforeAaa() {
+            log += "a";
+        }
+
+        /**
+         *
+         */
+        public void aaa() {
+            log += "b";
+        }
+
+        /**
+         *
+         */
+        public void afterAaa() {
+            log += "c";
+        }
+    }
+
+    /**
+     *
+     */
+    public void testEachBeforeAndEachAfterTest() {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(EachBeforeAndEachAfterTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals(1, result.getRunCount());
+        assertEquals("abc", log);
+    }
+
     private void printFailures(List<Failure> failures) {
         for (final Failure failure : failures) {
             System.out.println(">>> failure >>>");
