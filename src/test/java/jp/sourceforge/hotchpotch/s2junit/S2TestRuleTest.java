@@ -1308,6 +1308,39 @@ public class S2TestRuleTest {
         assertTrue(log.contains("b"));
     }
 
+    @RunWith(Seasar2.class)
+    public static class PublishedTestContextTest {
+
+        private MyTestContext context;
+
+        /**
+         *
+         */
+        public void before() {
+            log += context != null;
+        }
+
+        /**
+         *
+         */
+        public void aaa() {
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testPublishedTestContext() throws Exception {
+        S2TestMethodRunner.s2junit4Path = PublishedTestContextTest.class
+                .getName().replace(".", "/")
+                + ".s2junit4.dicon";
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(PublishedTestContextTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals("true", log);
+    }
+
     private void printFailures(List<Failure> failures) {
         for (final Failure failure : failures) {
             System.out.println(">>> failure >>>");
