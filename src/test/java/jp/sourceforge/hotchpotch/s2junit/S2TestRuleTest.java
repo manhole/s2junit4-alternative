@@ -945,6 +945,33 @@ public class S2TestRuleTest {
         assertEquals(14, NonAutoPreparingTest.ccc_size);
     }
 
+    /**
+     *
+     */
+    @RunWith(Seasar2.class)
+    public static class AutoIncludingTest {
+
+        private S2Container container;
+
+        /**
+         *
+         */
+        public void aaa() {
+            log += container.getComponent("hoge").toString();
+        }
+    }
+
+    /**
+     *
+     */
+    public void testAutoIncludingTest() {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(AutoIncludingTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        assertEquals("aaa", log);
+    }
+
     private void printFailures(List<Failure> failures) {
         for (final Failure failure : failures) {
             System.out.println(">>> failure >>>");
