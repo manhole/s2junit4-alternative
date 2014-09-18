@@ -496,8 +496,11 @@ public class S2TestRuleTest {
         assertEquals("112439", log);
     }
 
-    @RunWith(Seasar2.class)
+    @RunWith(Parameterized.class)
     public static class ParameterizedS2JUnitOrderTest {
+
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
 
         @BeforeClass
         public static void a() {
@@ -541,8 +544,8 @@ public class S2TestRuleTest {
         }
     }
 
-    @Ignore
-    public void _testParameterizedS2JUnitOrder() {
+    @Test
+    public void testParameterizedS2JUnitOrder() {
         JUnitCore core = new JUnitCore();
         Result result = core.run(ParameterizedS2JUnitOrderTest.class);
         printFailures(result.getFailures());
