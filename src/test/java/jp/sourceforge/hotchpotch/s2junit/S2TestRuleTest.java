@@ -774,26 +774,21 @@ public class S2TestRuleTest {
         assertTrue(log.contains("d"));
     }
 
-    /**
-     *
-     */
-    @RunWith(Seasar2.class)
     public static class TrimStringTest {
+
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
 
         private TestContext context;
 
         private DataAccessor accessor;
 
-        /**
-         *
-         */
+        @PostBindFields
         public void before() {
             context.setTrimString(false);
         }
 
-        /**
-         *
-         */
+        @Test
         public void aaa() {
             DataTable table = accessor.readDbByTable("EMP", "ENAME = ' '");
             assertEquals(1, table.getRowSize());
@@ -807,9 +802,7 @@ public class S2TestRuleTest {
         }
     }
 
-    /**
-     *
-     */
+    @Test
     public void testTrimStringTest() {
         JUnitCore core = new JUnitCore();
         Result result = core.run(TrimStringTest.class);
