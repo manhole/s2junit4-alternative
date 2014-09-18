@@ -554,37 +554,29 @@ public class S2TestRuleTest {
         assertEquals("@RunWith(Parameterized.class)と同じ結果になるはず", "ac(0:1,1)dc(1:2,4)dc(2:3,9)db", log);
     }
 
-    /**
-     *
-     */
-    @RunWith(Seasar2.class)
     public static class EachBeforeAndEachAfterTest {
 
-        /**
-         *
-         */
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
+
         public void beforeAaa() {
             log += "a";
         }
 
-        /**
-         *
-         */
+        @Test
         public void aaa() {
             log += "b";
         }
 
-        /**
-         *
-         */
         public void afterAaa() {
             log += "c";
         }
     }
 
-    /**
-     *
-     */
+    // テスト命名規約でのテストメソッド判定はサポートしないことにする。
+    // ただしbeforeXxx, afterXxxは、代替アノテーションが存在しないため移植対象とするかも。
+    @Ignore
+    @Test
     public void testEachBeforeAndEachAfterTest() {
         JUnitCore core = new JUnitCore();
         Result result = core.run(EachBeforeAndEachAfterTest.class);
