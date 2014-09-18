@@ -179,6 +179,7 @@ public class S2TestRule implements TestRule {
         }
         runEachBefore();
         initContainer();
+        testContext.registerColumnTypes();
         bindFields();
     }
 
@@ -189,6 +190,7 @@ public class S2TestRule implements TestRule {
             throw new AssertionError(th);
         }
 
+        testContext.revertColumnTypes();
         testContext.destroyContainer();
         runEachAfter();
         try {
