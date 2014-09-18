@@ -19,10 +19,12 @@ import org.seasar.framework.container.factory.SingletonS2ContainerFactory;
 import org.seasar.framework.container.impl.S2ContainerBehavior;
 import org.seasar.framework.convention.NamingConvention;
 import org.seasar.framework.convention.impl.NamingConventionImpl;
+import org.seasar.framework.env.Env;
 import org.seasar.framework.exception.NoSuchMethodRuntimeException;
 import org.seasar.framework.unit.EasyMockSupport;
 import org.seasar.framework.unit.InternalTestContext;
 import org.seasar.framework.unit.S2TestIntrospector;
+import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.UnitClassLoader;
 import org.seasar.framework.unit.annotation.PublishedTestContext;
 import org.seasar.framework.unit.impl.ConventionTestIntrospector;
@@ -167,6 +169,9 @@ public class S2TestRule implements TestRule {
     }
 
     protected void before() throws Throwable {
+        Env.setFilePath(Seasar2.ENV_PATH);
+        Env.setValueIfAbsent(Seasar2.ENV_VALUE);
+
         try {
             setUpTestContext();
         } catch (final Throwable th) {
@@ -191,6 +196,8 @@ public class S2TestRule implements TestRule {
         } catch (final Throwable th) {
             throw new AssertionError(th);
         }
+
+        Env.initialize();
     }
 
     /**

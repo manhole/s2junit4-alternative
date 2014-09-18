@@ -1176,21 +1176,19 @@ public class S2TestRuleTest {
 
     // TODO Prerequisiteテスト群
 
-    @RunWith(Seasar2.class)
     public static class EnvTest {
 
-        /**
-         *
-         */
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
+
+        @Test
         public void env() {
             log += Env.getFilePath();
             log += Env.getValue();
         }
     }
 
-    /**
-     * @throws Exception
-     */
+    @Test
     public void testEnv() throws Exception {
         JUnitCore core = new JUnitCore();
         Result result = core.run(EnvTest.class);
