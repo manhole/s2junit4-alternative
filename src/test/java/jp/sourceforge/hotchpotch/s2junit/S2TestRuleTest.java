@@ -1092,33 +1092,38 @@ public class S2TestRuleTest {
         assertEquals("true-true", log);
     }
 
-    @RunWith(Seasar2.class)
     public static class BindEJB3ByBeanNameTest {
+
+        @Rule
+        public S2TestRule createRule() {
+            final S2TestRule rule = S2TestRule.create(this);
+            rule.setupTestContext(new TestContextSetup() {
+                @Override
+                public void setup(final TestContext testContext) {
+                    before();
+                }
+            });
+            return rule;
+        }
 
         TestContext testContext;
 
         @EJB(beanName = "xxx")
         private IHoge yyy;
 
-        /**
-         *
-         */
         public void before() {
             testContext.register(Hoge2.class);
         }
 
-        /**
-         *
-         */
+        @Test
         public void aaa() {
             log += (yyy != null);
         }
+
     }
 
-    /**
-     * @throws Exception
-     */
-    public void testBindEJB3ByBeanName() throws Exception {
+    @Test
+    public void testBindEJB3ByBeanNameTest() throws Exception {
         JUnitCore core = new JUnitCore();
         Result result = core.run(BindEJB3ByBeanNameTest.class);
         printFailures(result.getFailures());
