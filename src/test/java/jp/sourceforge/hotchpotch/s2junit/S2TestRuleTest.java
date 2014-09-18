@@ -652,11 +652,10 @@ public class S2TestRuleTest {
         assertNull(values.get(8));
     }
 
-    /**
-     *
-     */
-    @RunWith(Seasar2.class)
     public static class AutoPreparingTest {
+
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
 
         static int aaa_size;
 
@@ -666,31 +665,23 @@ public class S2TestRuleTest {
 
         DataAccessor da;
 
-        /**
-         *
-         */
+        @Test
         public void aaa() {
             aaa_size = da.readDbByTable("EMP").getRowSize();
         }
 
-        /**
-         *
-         */
+        @Test
         public void bbb() {
             bbb_size = da.readDbByTable("EMP").getRowSize();
         }
 
-        /**
-         *
-         */
+        @Test
         public void ccc() {
             ccc_size = da.readDbByTable("EMP").getRowSize();
         }
     }
 
-    /**
-     *
-     */
+    @Test
     public void testAutoPreparingTest() {
         AutoPreparingTest.aaa_size = 0;
         AutoPreparingTest.bbb_size = 0;
