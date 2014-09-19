@@ -138,11 +138,6 @@ public class S2TestRule implements TestRule {
     }
 
     protected void executeMethod() throws Throwable {
-        executeMethodBody();
-    }
-
-    protected void executeMethodBody() throws Throwable {
-        //method.invoke(test);
         base.evaluate();
     }
 
