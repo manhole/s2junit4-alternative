@@ -1,9 +1,5 @@
 package jp.sourceforge.hotchpotch.s2junit;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,8 +29,6 @@ import org.seasar.framework.unit.S2TestIntrospector;
 import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.UnitClassLoader;
 import org.seasar.framework.unit.annotation.PublishedTestContext;
-import org.seasar.framework.unit.impl.AnnotationTestIntrospector;
-import org.seasar.framework.unit.impl.ConventionTestIntrospector;
 import org.seasar.framework.util.DisposableUtil;
 import org.seasar.framework.util.ResourceUtil;
 import org.seasar.framework.util.StringUtil;
