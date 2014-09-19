@@ -232,6 +232,8 @@ public class S2TestRule implements TestRule {
             protected void after() {
                 try {
                     unbindFields();
+                } catch (final Error e) {
+                    throw e;
                 } catch (final Throwable th) {
                     throw new AssertionError(th);
                 }
@@ -414,6 +416,8 @@ public class S2TestRule implements TestRule {
             if (eachBefore != null) {
                 invokeMethod(eachBefore);
             }
+        } catch (final Error e) {
+            throw e;
         } catch (final Throwable e) {
             // TODO
             throw new AssertionError(e);
@@ -432,6 +436,8 @@ public class S2TestRule implements TestRule {
             if (eachAfter != null) {
                 invokeMethod(eachAfter);
             }
+        } catch (final Error e) {
+            throw e;
         } catch (final Throwable e) {
             // TODO
             throw new AssertionError(e);
