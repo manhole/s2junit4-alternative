@@ -785,7 +785,7 @@ public class S2TestRuleTest {
 
         private DataAccessor accessor;
 
-        @PostBindFields
+        @BeforeTest
         public void before() {
             context.setTrimString(false);
         }
@@ -929,7 +929,7 @@ public class S2TestRuleTest {
 
         private DataAccessor da;
 
-        @Before
+        @BeforeTest
         @SuppressWarnings("deprecation")
         public void before() {
             ctx.setAutoPreparing(false);
