@@ -37,7 +37,7 @@ dependencies {
     testCompile 'hsqldb:hsqldb:1.8.0.1'
 
     compile 'org.apache.geronimo.specs:geronimo-jta_1.1_spec:1.1.1', {
-        ext.optional = true
+        ext.mavenScope = 'provided'
     }
     testCompile 'org.apache.geronimo.specs:geronimo-ejb_3.0_spec:1.0'
     testCompile 'org.apache.geronimo.specs:geronimo-annotation_1.0_spec:1.0'
@@ -56,7 +56,59 @@ publishing {
         maven(MavenPublication) {
             from components.java
             artifact sourcesJar
+            pom.withXml { /* org.gradle.api.XmlProvider */ XmlProvider xml ->
+                // groovy.util.Node
+                Node projectNode = xml.asNode()
+                Node dependencies = projectNode.dependencies[0]
+                // dependenciesを作りなおす
+                dependencies.children().clear()
+                def dummyNode = dependencies.appendNode("dummy")
+                dummyNode + {
+                    resolveStrategy = Closure.DELEGATE_FIRST
+                    NodeBuilder builder1 = delegate
+                    project.configurations.each { Configuration config ->
+                        /* org.gradle.api.artifacts.Configuration */
+                        config.dependencies.each { Dependency dependency ->
+                            builder1.dependency {
+                                NodeBuilder builder2 = delegate
+                                resolveStrategy = Closure.DELEGATE_FIRST
+                                builder2.groupId dependency.group
+                                builder2.artifactId dependency.name
+                                builder2.version dependency.version
+                                def scope = toMavenScope(config, dependency)
+                                if ("compile" != scope) {
+                                    builder2.scope scope
+                                }
+                                //println "---- " + dependency
+                                dependency.artifacts.each { DependencyArtifact artifact ->
+                                    if (artifact.classifier) {
+                                        builder2.type toMavenClassifier(artifact)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                dependencies.remove(dummyNode)
+            }
         }
     }
 }
 
+def toMavenScope(Configuration config, Dependency dependency) {
+    if (dependency.ext.has("mavenScope")) {
+        return dependency.mavenScope
+    }
+    switch (config.name) {
+        case 'testCompile':
+            return 'test'
+    }
+    return config.name
+}
+
+def toMavenClassifier(DependencyArtifact artifact) {
+    if ("tests" == artifact.classifier) {
+        return "test-jar"
+    }
+    return artifact.classifier
+}
