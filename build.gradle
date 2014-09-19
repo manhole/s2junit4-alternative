@@ -93,6 +93,15 @@ publishing {
             }
         }
     }
+    repositories {
+        def repo = "file:${rootDir}/../repo"
+        if (project.hasProperty('repo')) {
+            repo = project.'repo'
+        }
+        maven {
+            url repo
+        }
+    }
 }
 
 def toMavenScope(Configuration config, Dependency dependency) {
