@@ -205,6 +205,27 @@ public class S2TestRuleTest {
             assertNotNull(hello);
             log += "h";
         }
+
+        @BeforeTest
+        public void iii() {
+            log += "i";
+        }
+
+        @AfterTest
+        public void jjj() {
+            log += "j";
+        }
+
+        @BeforeTest("eee")
+        public void kkk() {
+            log += "k";
+        }
+
+        @AfterTest("eee")
+        public void lll() {
+            log += "l";
+        }
+
     }
 
     @Test
@@ -221,7 +242,7 @@ public class S2TestRuleTest {
          * @Before → @PostBindFields → @Test → @PreUnbindFields → @After
          */
         //assertEquals("acgehdb", log);
-        assertEquals("agcedhb", log);
+        assertEquals("aikgcedhljb", log);
     }
 
     @Ignore
