@@ -33,6 +33,7 @@ import org.seasar.framework.unit.S2TestIntrospector;
 import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.UnitClassLoader;
 import org.seasar.framework.unit.annotation.PublishedTestContext;
+import org.seasar.framework.unit.impl.AnnotationTestIntrospector;
 import org.seasar.framework.unit.impl.ConventionTestIntrospector;
 import org.seasar.framework.util.DisposableUtil;
 import org.seasar.framework.util.ResourceUtil;
@@ -142,13 +143,7 @@ public class S2TestRule implements TestRule {
     }
 
     private S2TestIntrospector createTestIntrospector() {
-        final ConventionTestIntrospector o = new ConventionTestIntrospector();
-        /*
-         * S2TestRuleからは、@Before,@Afterを実行しないようにする。
-         * @Before,@AfterはJUnitから呼ばれるので、S2TestRuleからも呼んでしまうと2回実行されてしまうため。
-         */
-        o.setBeforeAnnotation(Unused.class);
-        o.setAfterAnnotation(Unused.class);
+        final AlternativeTestIntrospector o = new AlternativeTestIntrospector();
         return o;
     }
 
@@ -386,6 +381,8 @@ public class S2TestRule implements TestRule {
             //addFailure(e.getTargetException());
             //throw new FailedBefore();
             throw new AssertionError(e.getTargetException());
+        } catch (final Error e) {
+            throw e;
         } catch (final Throwable e) {
             //addFailure(e);
             //throw new FailedBefore();
@@ -401,6 +398,8 @@ public class S2TestRule implements TestRule {
             } catch (final InvocationTargetException e) {
                 //addFailure(e.getTargetException());
                 throw new AssertionError(e.getTargetException());
+            } catch (final Error e) {
+                throw e;
             } catch (final Throwable e) {
                 //addFailure(e);
                 throw new AssertionError(e);
@@ -631,14 +630,6 @@ public class S2TestRule implements TestRule {
 
         abstract protected void after();
 
-    }
-
-    /*
-     * @Before, @AfterをS2TestRuleからは使わないようにするダミー。
-     */
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.METHOD)
-    private @interface Unused {
     }
 
 }

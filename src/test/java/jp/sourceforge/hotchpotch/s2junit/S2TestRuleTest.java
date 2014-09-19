@@ -250,15 +250,14 @@ public class S2TestRuleTest {
      * メソッド命名規約はサポートしない。それそれJUnit4アノテーションを使うこと。
      * beforeClass -> @BeforeClass
      * afterClass -> @AfterClass
-     * before -> @Before
-     * after -> @After
-     * postBindFields -> @PostBindFields
-     * preUnbindFields -> @PreUnbindFields
+     * before -> @BeforeTest (@Beforeではない)
+     * after -> @AfterTest (@Afterではない)
+     * postBindFields -> @PostBindFields (結果として@Beforeが同じ状態になっている)
+     * preUnbindFields -> @PreUnbindFields (結果として@Afterが同じ状態になっている)
      * その他 -> @Test
+     * beforeXxxx -> @BeforeTest("xxxx")
+     * afterXxxx -> @AfterTest("xxxx")
      *
-     * beforeXxxx,afterXxxxは有効なままにする。
-     *
-     * TODO: 現状、postBindFields,preUnbindFieldsメソッド名が効いてしまっている。
      */
     public static class ConventionTest {
 
@@ -310,11 +309,9 @@ public class S2TestRuleTest {
         Result result = core.run(ConventionTest.class);
         printFailures(result.getFailures());
         assertTrue(result.wasSuccessful());
+        //命名規約は無効。アノテーションを付けていないのでbefore()などは呼ばれない。
         //assertEquals("acgehdb", log);
-        // TODO: そのつもりは無いがpostBindFields,preUnbindFields命名規約が有効になってしまっている。
-        //assertEquals("geh", log);
-        // before(), after() を有効にした。
-        assertEquals("cgehd", log);
+        assertEquals("e", log);
     }
 
     public static class InvalidMethodsTest {
@@ -575,6 +572,7 @@ public class S2TestRuleTest {
         @Rule
         public S2TestRule testRule = S2TestRule.create(this);
 
+        @BeforeTest("aaa")
         public void beforeAaa() {
             log += "a";
         }
@@ -584,6 +582,7 @@ public class S2TestRuleTest {
             log += "b";
         }
 
+        @AfterTest("aaa")
         public void afterAaa() {
             log += "c";
         }
@@ -612,6 +611,7 @@ public class S2TestRuleTest {
 
         private TestContext context;
 
+        @BeforeTest("aaa")
         public void beforeAaa() {
             set();
         }
@@ -624,6 +624,7 @@ public class S2TestRuleTest {
             assertThat(context, is(notNullValue()));
         }
 
+        @AfterTest("aaa")
         public void afterAaa() {
             set();
         }
@@ -713,6 +714,7 @@ public class S2TestRuleTest {
             assertEquals(16, size);
         }
 
+        @BeforeTest("none")
         public void beforeNone() {
             context.setPreparationType(PreparationType.NONE);
         }
@@ -724,6 +726,7 @@ public class S2TestRuleTest {
             log += "a";
         }
 
+        @BeforeTest("write")
         public void beforeWrite() {
             context.setPreparationType(PreparationType.WRITE);
         }
@@ -735,6 +738,7 @@ public class S2TestRuleTest {
             log += "b";
         }
 
+        @BeforeTest("replace")
         public void beforeReplace() {
             context.setPreparationType(PreparationType.REPLACE);
         }
@@ -746,6 +750,7 @@ public class S2TestRuleTest {
             log += "c";
         }
 
+        @BeforeTest("allReplace")
         public void beforeAllReplace() {
             context.setPreparationType(PreparationType.ALL_REPLACE);
         }
@@ -815,6 +820,7 @@ public class S2TestRuleTest {
 
         private TestContext context;
 
+        @BeforeTest("aaa")
         public void beforeAaa() {
             context.setTrimString(true);
         }
@@ -827,6 +833,7 @@ public class S2TestRuleTest {
             log += "a";
         }
 
+        @BeforeTest("bbb")
         public void beforeBbb() {
             context.setTrimString(false);
         }
@@ -839,6 +846,7 @@ public class S2TestRuleTest {
             log += "b";
         }
 
+        @BeforeTest("ccc")
         public void beforeCcc() {
             context.setTrimString(false);
 
@@ -866,6 +874,7 @@ public class S2TestRuleTest {
             log += "d";
         }
 
+        @AfterTest("ccc")
         public void afterCcc() {
             assertEquals(ColumnTypes.STRING, ColumnTypes
                     .getColumnType(String.class));
@@ -1005,7 +1014,7 @@ public class S2TestRuleTest {
          *
          * TODO: before()に@Beforeが付いていたらエラーにするのが良いかな。
          */
-//        @Before
+        @BeforeTest
         public void before() {
             ctx.setAutoIncluding(false);
         }
@@ -1071,6 +1080,7 @@ public class S2TestRuleTest {
          * S2JUnit4では呼ばれていたが、
          * alternativeでは呼ばれない。
          */
+        @BeforeTest
         public void before() {
             testContext.register(Hoge.class);
             testContext.register(Foo.class);
@@ -1103,6 +1113,7 @@ public class S2TestRuleTest {
         @EJB(beanName = "xxx")
         private IHoge yyy;
 
+        @BeforeTest
         public void before() {
             testContext.register(Hoge2.class);
         }
@@ -1134,6 +1145,7 @@ public class S2TestRuleTest {
         @EJB
         private IBar zzz;
 
+        @BeforeTest
         public void before() {
             testContext.register(Bar.class);
         }
@@ -1261,6 +1273,7 @@ public class S2TestRuleTest {
             log += "a";
         }
 
+        @BeforeTest("bbb")
         public void beforeBbb() {
             context.setAutoIncluding(false);
         }
@@ -1292,6 +1305,7 @@ public class S2TestRuleTest {
 
         private Seasar2Test.MyTestContext context;
 
+        @BeforeTest
         public void before() {
             log += context != null;
         }
