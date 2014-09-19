@@ -40,6 +40,71 @@ import org.seasar.framework.util.tiger.ReflectionUtil;
  */
 public class S2TestRule implements TestRule {
 
+    /**
+     * S2JUnit4のデフォルトの設定ファイルのパス
+     */
+    protected static final String DEFAULT_S2JUNIT4_PATH = "s2junit4.dicon";
+
+    /**
+     * S2JUnit4の設定ファイルのパス
+     */
+    protected static String s2junit4Path = DEFAULT_S2JUNIT4_PATH;
+
+    /**
+     * テストオブジェクト
+     */
+    protected Object test;
+
+    /**
+     * テストクラス
+     */
+    protected Class<?> testClass;
+
+    /**
+     * テストメソッド
+     */
+    protected Method method;
+
+    /**
+     * テストのディスクリプション
+     */
+    protected Description description;
+
+    /**
+     * テストクラスのイントロスペクター
+     */
+    protected S2TestIntrospector introspector;
+
+    /**
+     * {@link #unitClassLoader テストで使用するクラスローダー}で置き換えられる前のオリジナルのクラスローダー
+     */
+    protected ClassLoader originalClassLoader;
+
+    /**
+     * テストで使用するクラスローダー
+     */
+    protected UnitClassLoader unitClassLoader;
+
+    /**
+     * S2JUnit4の内部的なテストコンテキスト
+     */
+    protected InternalTestContext testContext;
+
+    /**
+     * バインディングが行われたフィールドのリスト
+     */
+    private List<Field> boundFields = CollectionsUtil.newArrayList();
+
+    /**
+     * EasyMockとの対話をサポートするオブジェクト
+     */
+    protected EasyMockSupport easyMockSupport = new EasyMockSupport();
+
+    /**
+     * テストが失敗したことを表すフラグ
+     */
+    protected boolean testFailed;
+
     private final BeanDesc beanDesc;
     private Statement base;
 
@@ -226,71 +291,6 @@ public class S2TestRule implements TestRule {
     protected void executeMethod() throws Throwable {
         base.evaluate();
     }
-
-    /**
-     * S2JUnit4のデフォルトの設定ファイルのパス
-     */
-    protected static final String DEFAULT_S2JUNIT4_PATH = "s2junit4.dicon";
-
-    /**
-     * S2JUnit4の設定ファイルのパス
-     */
-    protected static String s2junit4Path = DEFAULT_S2JUNIT4_PATH;
-
-    /**
-     * テストオブジェクト
-     */
-    protected Object test;
-
-    /**
-     * テストクラス
-     */
-    protected Class<?> testClass;
-
-    /**
-     * テストメソッド
-     */
-    protected Method method;
-
-    /**
-     * テストのディスクリプション
-     */
-    protected Description description;
-
-    /**
-     * テストクラスのイントロスペクター
-     */
-    protected S2TestIntrospector introspector;
-
-    /**
-     * {@link #unitClassLoader テストで使用するクラスローダー}で置き換えられる前のオリジナルのクラスローダー
-     */
-    protected ClassLoader originalClassLoader;
-
-    /**
-     * テストで使用するクラスローダー
-     */
-    protected UnitClassLoader unitClassLoader;
-
-    /**
-     * S2JUnit4の内部的なテストコンテキスト
-     */
-    protected InternalTestContext testContext;
-
-    /**
-     * バインディングが行われたフィールドのリスト
-     */
-    private List<Field> boundFields = CollectionsUtil.newArrayList();
-
-    /**
-     * EasyMockとの対話をサポートするオブジェクト
-     */
-    protected EasyMockSupport easyMockSupport = new EasyMockSupport();
-
-    /**
-     * テストが失敗したことを表すフラグ
-     */
-    protected boolean testFailed;
 
     // copy from: S2TestMethodRunner
     protected void setUpTestContext() throws Throwable {
