@@ -312,7 +312,9 @@ public class S2TestRuleTest {
         assertTrue(result.wasSuccessful());
         //assertEquals("acgehdb", log);
         // TODO: そのつもりは無いがpostBindFields,preUnbindFields命名規約が有効になってしまっている。
-        assertEquals("geh", log);
+        //assertEquals("geh", log);
+        // before(), after() を有効にした。
+        assertEquals("cgehd", log);
     }
 
     public static class InvalidMethodsTest {
@@ -983,12 +985,6 @@ public class S2TestRuleTest {
         @Rule
         public S2TestRule createRule() {
             final S2TestRule rule = S2TestRule.create(this);
-            rule.setupTestContext(new TestContextSetup() {
-                @Override
-                public void setup(final TestContext testContext) {
-                    testContext.setAutoIncluding(false);
-                }
-            });
             return rule;
         }
 
@@ -999,14 +995,20 @@ public class S2TestRuleTest {
         /*
          * NOTE: beforeのタイミングが後ろに変わったため、ここでsetAutoIncludingしても遅い。
          *
-         * S2JUnit4(S2TestMethodRunner)では、before → initContainerという順序だったが、
-         * TestRuleベースの実装に変えたことで initContainer → before という順序に変わった。
+         * S2JUnit4(S2TestMethodRunner)では、@Before/before() → initContainerという順序だったが、
+         * TestRuleベースの実装に変えたことで initContainer → @Before という順序に変わった。
          * setAutoIncludingはinitContainerの時点で必要。
+         *
+         * → initContainerの前でTestContextをセットアップするタイミングが欲しかったので、before() 機能を
+         * 復活させた。
+         * これで before() → initContainer → @Before という処理順になる。
+         *
+         * TODO: before()に@Beforeが付いていたらエラーにするのが良いかな。
          */
 //        @Before
-//        public void before() {
-//            ctx.setAutoIncluding(false);
-//        }
+        public void before() {
+            ctx.setAutoIncluding(false);
+        }
 
         @Test
         public void aaa() {
@@ -1058,17 +1060,7 @@ public class S2TestRuleTest {
     public static class BindEJB3ByFieldNameTest {
 
         @Rule
-        public S2TestRule createRule() {
-            final S2TestRule rule = S2TestRule.create(this);
-            //rule.setAutoIncluding(false);
-            rule.setupTestContext(new TestContextSetup() {
-                @Override
-                public void setup(final TestContext testContext) {
-                    before();
-                }
-            });
-            return rule;
-        }
+        public S2TestRule testRule = S2TestRule.create(this);
 
         TestContext testContext;
 
@@ -1104,16 +1096,7 @@ public class S2TestRuleTest {
     public static class BindEJB3ByBeanNameTest {
 
         @Rule
-        public S2TestRule createRule() {
-            final S2TestRule rule = S2TestRule.create(this);
-            rule.setupTestContext(new TestContextSetup() {
-                @Override
-                public void setup(final TestContext testContext) {
-                    before();
-                }
-            });
-            return rule;
-        }
+        public S2TestRule testRule = S2TestRule.create(this);
 
         TestContext testContext;
 
@@ -1144,16 +1127,7 @@ public class S2TestRuleTest {
     public static class BindEJB3ByTypeTest {
 
         @Rule
-        public S2TestRule createRule() {
-            final S2TestRule rule = S2TestRule.create(this);
-            rule.setupTestContext(new TestContextSetup() {
-                @Override
-                public void setup(final TestContext testContext) {
-                    before();
-                }
-            });
-            return rule;
-        }
+        public S2TestRule testRule = S2TestRule.create(this);
 
         TestContext testContext;
 
@@ -1314,16 +1288,7 @@ public class S2TestRuleTest {
     public static class PublishedTestContextTest {
 
         @Rule
-        public S2TestRule createRule() {
-            final S2TestRule rule = S2TestRule.create(this);
-            rule.setupTestContext(new TestContextSetup() {
-                @Override
-                public void setup(final TestContext testContext) {
-                    before();
-                }
-            });
-            return rule;
-        }
+        public S2TestRule testRule = S2TestRule.create(this);
 
         private Seasar2Test.MyTestContext context;
 

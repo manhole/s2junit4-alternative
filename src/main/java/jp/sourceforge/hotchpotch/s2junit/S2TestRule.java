@@ -1,6 +1,11 @@
 package jp.sourceforge.hotchpotch.s2junit;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -123,7 +128,7 @@ public class S2TestRule implements TestRule {
     @Override
     public Statement apply(final Statement base, final Description description) {
         this.base = base;
-        introspector = new ConventionTestIntrospector();
+        introspector = createTestIntrospector();
         final String methodName = javaMethodName(description.getMethodName());
         this.method = findMethod(methodName);
 
@@ -134,6 +139,17 @@ public class S2TestRule implements TestRule {
                 steps.run();
             }
         };
+    }
+
+    private S2TestIntrospector createTestIntrospector() {
+        final ConventionTestIntrospector o = new ConventionTestIntrospector();
+        /*
+         * S2TestRuleからは、@Before,@Afterを実行しないようにする。
+         * @Before,@AfterはJUnitから呼ばれるので、S2TestRuleからも呼んでしまうと2回実行されてしまうため。
+         */
+        o.setBeforeAnnotation(Unused.class);
+        o.setAfterAnnotation(Unused.class);
+        return o;
     }
 
     private Steps setupSteps() {
@@ -160,6 +176,18 @@ public class S2TestRule implements TestRule {
             @Override
             protected void after() {
                 tearDownTestContext();
+            }
+        });
+
+        steps.enqueue(new StepSkeleton() {
+            @Override
+            protected void before() throws Throwable {
+                runBefores();
+            }
+
+            @Override
+            protected void after() {
+                runAfters();
             }
         });
 
@@ -345,6 +373,39 @@ public class S2TestRule implements TestRule {
         Thread.currentThread().setContextClassLoader(originalClassLoader);
         unitClassLoader = null;
         originalClassLoader = null;
+    }
+
+    protected void runBefores() {
+        try {
+            final List<Method> befores = introspector
+                    .getBeforeMethods(testClass);
+            for (final Method before : befores) {
+                before.invoke(test);
+            }
+        } catch (final InvocationTargetException e) {
+            //addFailure(e.getTargetException());
+            //throw new FailedBefore();
+            throw new AssertionError(e.getTargetException());
+        } catch (final Throwable e) {
+            //addFailure(e);
+            //throw new FailedBefore();
+            throw new AssertionError(e);
+        }
+    }
+
+    protected void runAfters() {
+        final List<Method> afters = introspector.getAfterMethods(testClass);
+        for (final Method after : afters) {
+            try {
+                after.invoke(test);
+            } catch (final InvocationTargetException e) {
+                //addFailure(e.getTargetException());
+                throw new AssertionError(e.getTargetException());
+            } catch (final Throwable e) {
+                //addFailure(e);
+                throw new AssertionError(e);
+            }
+        }
     }
 
     protected void runEachBefore() {
@@ -570,6 +631,14 @@ public class S2TestRule implements TestRule {
 
         abstract protected void after();
 
+    }
+
+    /*
+     * @Before, @AfterをS2TestRuleからは使わないようにするダミー。
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    private @interface Unused {
     }
 
 }
