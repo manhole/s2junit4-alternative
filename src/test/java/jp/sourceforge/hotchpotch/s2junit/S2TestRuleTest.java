@@ -1416,6 +1416,126 @@ public class S2TestRuleTest {
         assertEquals("c", log);
     }
 
+    // 追加分
+    public static class ExtendsTestParent {
+
+        @Rule
+        public S2TestRule testRule = S2TestRule.create(this);
+
+        @Test
+        public void aaa() {
+            log += "a";
+        }
+
+        @Before
+        public void bbb1() {
+            log += "b";
+        }
+
+        @After
+        public void eee1() {
+            log += "e";
+        }
+
+        @PostBindFields
+        public void ggg1() {
+            log += "g";
+        }
+
+        @PreUnbindFields
+        public void hhh1() {
+            log += "h";
+        }
+
+        @BeforeClass
+        public static void kkk1() {
+            log += "k";
+        }
+
+        @AfterClass
+        public static void lll1() {
+            log += "l";
+        }
+
+        @BeforeTest
+        public void ooo1() {
+            log += "o";
+        }
+
+        @AfterTest
+        public void ppp1() {
+            log += "p";
+        }
+
+    }
+
+    public static class ExtendsTest extends ExtendsTestParent {
+
+        @Test
+        public void aaa() {
+            log += "A";
+        }
+
+        @Before
+        public void bbb2() {
+            log += "B";
+        }
+
+        @After
+        public void eee2() {
+            log += "E";
+        }
+
+        @PostBindFields
+        public void ggg2() {
+            log += "G";
+        }
+
+        @PreUnbindFields
+        public void hhh2() {
+            log += "H";
+        }
+
+        @BeforeClass
+        public static void kkk2() {
+            log += "K";
+        }
+
+        @AfterClass
+        public static void lll2() {
+            log += "L";
+        }
+
+        @BeforeTest
+        public void ooo2() {
+            log += "O";
+        }
+
+        @AfterTest
+        public void ppp2() {
+            log += "P";
+        }
+
+    }
+
+    // 追加分
+    @Test
+    public void testExtendsTestClass() {
+        JUnitCore core = new JUnitCore();
+        Result result = core.run(ExtendsTest.class);
+        printFailures(result.getFailures());
+        assertTrue(result.wasSuccessful());
+        /*
+         * TestRuleの仕組みに乗るため、S2JUnit4とは@Before,@Afterの実行位置が変わる。
+         * 代わりに@BeforeTest,@AfterTestが@Before,@Afterの位置で動作する。
+         *
+         * @BeforeTestと@PostBindFieldsを、@Before,@BeforeClassと同じように親クラスを先にする。
+         * @AfterTestと@PreUnbindFieldsを、@After,@AfterClassと同じように子クラスを先にする。
+         *
+         */
+        assertEquals("kKoOgGbBAEeHhPpLl", log);
+    }
+
     // "s2junit4config.dicon" を差し替える用途かな?
     private void configure(String name) {
         String path = getClass().getName().replace('.', '/') + "." + name;

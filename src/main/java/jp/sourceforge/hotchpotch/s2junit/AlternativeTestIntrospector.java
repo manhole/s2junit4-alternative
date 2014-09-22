@@ -1,9 +1,13 @@
 package jp.sourceforge.hotchpotch.s2junit;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.seasar.framework.unit.annotation.PostBindFields;
 import org.seasar.framework.unit.impl.AnnotationTestIntrospector;
 
 /**
@@ -82,7 +86,11 @@ public class AlternativeTestIntrospector extends AnnotationTestIntrospector {
             }
         }
         return candidate;
+    }
 
+    protected boolean runsTopToBottom(Class<? extends Annotation> annotation) {
+        return super.runsTopToBottom(annotation) || annotation.equals(BeforeTest.class)
+                || annotation.equals(PostBindFields.class);
     }
 
 }
