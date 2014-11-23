@@ -7,6 +7,7 @@ version = "0.0.2-SNAPSHOT"
 apply from: "gradle/misc.gradle"
 apply from: "gradle/eclipse.gradle"
 
+// gradleとIDEAで出力先が被らないようにgradle側を変更したつもりだったが、IDEAはgradle設定を見て同じ箇所へ出力するようで、結局被ってしまう。
 buildDir = 'build-gradle'
 sourceCompatibility = "1.6"
 targetCompatibility = "1.6"
