@@ -6,7 +6,7 @@
 
 * Java 6
 * JUnit 4.11
-* S2Tiger 2.4.47 or higher
+* S2Tiger 2.4.47
 
 
 ## 使い方
