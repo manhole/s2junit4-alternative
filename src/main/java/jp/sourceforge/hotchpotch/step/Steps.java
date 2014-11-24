@@ -9,27 +9,53 @@ import java.util.List;
 public class Steps {
 
     private List<Step> steps = new ArrayList<Step>();
-    private int position = -1;
-    private final Completion completion = new Completion() {
-        @Override
-        public void complete() throws Throwable {
-            nextStep();
-        }
-    };
 
     public void enqueue(final Step step) {
         steps.add(step);
     }
 
     public void run() throws Throwable {
-        nextStep();
+        final DefaultCompletion completion = new DefaultCompletion();
+        final List<Step> dones = new ArrayList<Step>();
+        Throwable ex = null;
+        try {
+            for (final Step step : steps) {
+                step.before();
+                dones.add(step);
+
+                step.execute(completion);
+                if (completion.called) {
+                    completion.called = false;
+                } else {
+                    break;
+                }
+
+            }
+        } catch (final Throwable e) {
+            ex = e;
+        } finally {
+            final int size = dones.size();
+            for (int i = size - 1; 0 <= i; i--) {
+                final Step step = dones.get(i);
+                try {
+                    step.after();
+                } catch (final Throwable e) {
+                    ex = e;
+                }
+            }
+        }
+        if (ex != null) {
+            throw ex;
+        }
     }
 
-    protected void nextStep() throws Throwable {
-        position++;
-        if (position < steps.size()) {
-            final Step step = steps.get(position);
-            step.step(completion);
+    static class DefaultCompletion implements Completion {
+
+        boolean called;
+
+        @Override
+        public void complete() throws Throwable {
+            called = true;
         }
     }
 

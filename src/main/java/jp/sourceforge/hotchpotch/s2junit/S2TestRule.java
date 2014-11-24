@@ -9,7 +9,6 @@ import java.util.List;
 import javax.transaction.TransactionManager;
 
 import jp.sourceforge.hotchpotch.step.Completion;
-import jp.sourceforge.hotchpotch.step.Step;
 import jp.sourceforge.hotchpotch.step.StepSkeleton;
 import jp.sourceforge.hotchpotch.step.Steps;
 
@@ -149,85 +148,85 @@ public class S2TestRule implements TestRule {
         final Steps steps = new Steps();
         steps.enqueue(new StepSkeleton() {
             @Override
-            protected void before() throws Throwable {
+            public void before() throws Throwable {
                 Env.setFilePath(Seasar2.ENV_PATH);
                 Env.setValueIfAbsent(Seasar2.ENV_VALUE);
             }
 
             @Override
-            protected void after() {
+            public void after() {
                 Env.initialize();
             }
         });
 
         steps.enqueue(new StepSkeleton() {
             @Override
-            protected void before() throws Throwable {
+            public void before() throws Throwable {
                 setUpTestContext();
             }
 
             @Override
-            protected void after() {
+            public void after() {
                 tearDownTestContext();
             }
         });
 
         steps.enqueue(new StepSkeleton() {
             @Override
-            protected void before() throws Throwable {
+            public void before() throws Throwable {
                 runBefores();
             }
 
             @Override
-            protected void after() {
+            public void after() {
                 runAfters();
             }
         });
 
         steps.enqueue(new StepSkeleton() {
             @Override
-            protected void before() throws Throwable {
+            public void before() throws Throwable {
                 runEachBefore();
             }
 
             @Override
-            protected void after() {
+            public void after() {
                 runEachAfter();
             }
         });
 
         steps.enqueue(new StepSkeleton() {
             @Override
-            protected void before() throws Throwable {
+            public void before() throws Throwable {
                 initContainer();
             }
 
             @Override
-            protected void after() {
+            public void after() {
                 destroyContainer();
             }
         });
 
         steps.enqueue(new StepSkeleton() {
             @Override
-            protected void before() throws Throwable {
+            public void before() throws Throwable {
                 testContext.registerColumnTypes();
             }
 
             @Override
-            protected void after() {
+            public void after() {
                 testContext.revertColumnTypes();
             }
         });
 
         steps.enqueue(new StepSkeleton() {
             @Override
-            protected void before() throws Throwable {
+            public void before() throws Throwable {
                 bindFields();
             }
 
             @Override
-            protected void after() {
+            public void after() {
                 try {
                     unbindFields();
                 } catch (final Error e) {
@@ -238,9 +237,9 @@ public class S2TestRule implements TestRule {
             }
         });
 
-        steps.enqueue(new Step() {
+        steps.enqueue(new StepSkeleton() {
             @Override
-            public void step(final Completion completion) throws Throwable {
+            public void execute(final Completion completion) throws Throwable {
                 runTest();
                 completion.complete();
             }

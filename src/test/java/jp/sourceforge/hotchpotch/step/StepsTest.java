@@ -27,23 +27,23 @@ public class StepsTest {
         // ## Act ##
         steps.enqueue(new StepSkeleton() {
             @Override
-            protected void before() throws Throwable {
+            public void before() throws Throwable {
                 seq.add("1");
             }
 
             @Override
-            protected void after() {
+            public void after() {
                 seq.add("4");
             }
         });
         steps.enqueue(new StepSkeleton() {
             @Override
-            protected void before() throws Throwable {
+            public void before() throws Throwable {
                 seq.add("2");
             }
 
             @Override
-            protected void after() {
+            public void after() {
                 seq.add("3");
             }
         });
@@ -65,39 +65,39 @@ public class StepsTest {
         // ## Act ##
         steps.enqueue(new StepSkeleton() {
             @Override
-            protected void before() throws Throwable {
+            public void before() throws Throwable {
                 seq.add("1");
             }
 
             @Override
-            protected void after() {
+            public void after() {
                 seq.add("5");
             }
         });
         steps.enqueue(new StepSkeleton() {
             @Override
-            protected void before() throws Throwable {
+            public void before() throws Throwable {
                 seq.add("2");
             }
 
             @Override
-            protected void execute(final Completion completion) throws Throwable {
+            public void execute(final Completion completion) throws Throwable {
                 seq.add("3");
             }
 
             @Override
-            protected void after() {
+            public void after() {
                 seq.add("4");
             }
         });
         steps.enqueue(new StepSkeleton() {
             @Override
-            protected void before() throws Throwable {
+            public void before() throws Throwable {
                 seq.add("X");
             }
 
             @Override
-            protected void after() {
+            public void after() {
                 seq.add("X");
             }
         });
@@ -120,39 +120,39 @@ public class StepsTest {
         // ## Act ##
         steps.enqueue(new StepSkeleton() {
             @Override
-            protected void before() throws Throwable {
+            public void before() throws Throwable {
                 seq.add("1");
             }
 
             @Override
-            protected void after() {
+            public void after() {
                 seq.add("6");
             }
         });
         steps.enqueue(new StepSkeleton() {
             @Override
-            protected void before() throws Throwable {
+            public void before() throws Throwable {
                 seq.add("2");
             }
 
             @Override
-            protected void after() {
+            public void after() {
                 seq.add("5");
             }
         });
         steps.enqueue(new StepSkeleton() {
             @Override
-            protected void before() throws Throwable {
+            public void before() throws Throwable {
                 seq.add("3");
             }
 
             @Override
-            protected void execute(final Completion completion) throws Throwable {
+            public void execute(final Completion completion) throws Throwable {
                 throw new RuntimeException("e1");
             }
 
             @Override
-            protected void after() {
+            public void after() {
                 seq.add("4");
             }
         });
@@ -191,41 +191,41 @@ public class StepsTest {
         // ## Act ##
         steps.enqueue(new StepSkeleton() {
             @Override
-            protected void before() throws Throwable {
+            public void before() throws Throwable {
                 seq.add("1");
             }
 
             @Override
-            protected void after() {
+            public void after() {
                 seq.add("6");
                 throw new RuntimeException("e4");
             }
         });
         steps.enqueue(new StepSkeleton() {
             @Override
-            protected void before() throws Throwable {
+            public void before() throws Throwable {
                 seq.add("2");
             }
 
             @Override
-            protected void after() {
+            public void after() {
                 seq.add("5");
                 throw new RuntimeException("e3");
             }
         });
         steps.enqueue(new StepSkeleton() {
             @Override
-            protected void before() throws Throwable {
+            public void before() throws Throwable {
                 seq.add("3");
             }
 
             @Override
-            protected void execute(final Completion completion) throws Throwable {
+            public void execute(final Completion completion) throws Throwable {
                 throw new RuntimeException("e1");
             }
 
             @Override
-            protected void after() {
+            public void after() {
                 seq.add("4");
                 throw new RuntimeException("e2");
             }

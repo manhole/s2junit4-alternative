@@ -5,6 +5,10 @@ package jp.sourceforge.hotchpotch.step;
  */
 public interface Step {
 
-    void step(Completion completion) throws Throwable;
+    void execute(final Completion completion) throws Throwable;
+
+    void before() throws Throwable;
+
+    void after();
 
 }
