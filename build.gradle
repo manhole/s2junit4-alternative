@@ -9,8 +9,20 @@ apply from: 'gradle/eclipse.gradle'
 
 // gradleとIDEAで出力先が被らないようにgradle側を変更したつもりだったが、IDEAはgradle設定を見て同じ箇所へ出力するようで、結局被ってしまう。
 buildDir = 'build-gradle'
-sourceCompatibility = '1.6'
-targetCompatibility = '1.6'
+def jdkVersion = '1.6'
+sourceCompatibility = jdkVersion
+targetCompatibility = jdkVersion
+
+task validateJdkVersion << {
+    def actualVersion = System.getProperty('java.version')
+    // expected:<1.6> but was:<1.8.0>
+    //throw new RuntimeException("expected:<${expected}> but was:<${actualVersion}>")
+    assert actualVersion.startsWith(jdkVersion)
+}
+
+tasks.withType(SourceTask).each { SourceTask task ->
+    task.dependsOn validateJdkVersion
+}
 
 sourceSets {
     test {
