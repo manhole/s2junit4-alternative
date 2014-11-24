@@ -178,4 +178,68 @@ public class StepsTest {
         assertThat(seq, is(Arrays.asList("1", "2", "3", "4", "5", "6")));
     }
 
+    /**
+     * finally処理で例外が出ると、前の例外は失われてしまう。
+     * afterは必ず呼ぶこと。
+     */
+    @Test
+    public void test_exception2() throws Throwable {
+        // ## Arrange ##
+        final Steps steps = new Steps();
+        final List<String> seq = new ArrayList<String>();
+
+        // ## Act ##
+        steps.enqueue(new StepSkeleton() {
+            @Override
+            protected void before() throws Throwable {
+                seq.add("1");
+            }
+
+            @Override
+            protected void after() {
+                seq.add("6");
+                throw new RuntimeException("e4");
+            }
+        });
+        steps.enqueue(new StepSkeleton() {
+            @Override
+            protected void before() throws Throwable {
+                seq.add("2");
+            }
+
+            @Override
+            protected void after() {
+                seq.add("5");
+                throw new RuntimeException("e3");
+            }
+        });
+        steps.enqueue(new StepSkeleton() {
+            @Override
+            protected void before() throws Throwable {
+                seq.add("3");
+            }
+
+            @Override
+            protected void execute(final Completion completion) throws Throwable {
+                throw new RuntimeException("e1");
+            }
+
+            @Override
+            protected void after() {
+                seq.add("4");
+                throw new RuntimeException("e2");
+            }
+        });
+
+        try {
+            steps.run();
+            fail();
+        } catch (final RuntimeException e) {
+            assertThat(e.getMessage(), is("e4"));
+        }
+
+        // ## Assert ##
+        assertThat(seq, is(Arrays.asList("1", "2", "3", "4", "5", "6")));
+    }
+
 }
