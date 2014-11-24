@@ -4,10 +4,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.TransactionManager;
+
+import jp.sourceforge.hotchpotch.step.Completion;
+import jp.sourceforge.hotchpotch.step.Step;
+import jp.sourceforge.hotchpotch.step.StepSkeleton;
+import jp.sourceforge.hotchpotch.step.Steps;
 
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -575,61 +579,6 @@ public class S2TestRule implements TestRule {
 
     public void setupTestContext(final TestContextSetup setup) {
         this.testContextSetup = setup;
-    }
-
-    static class Steps {
-
-        private List<Step> steps = new ArrayList<Step>();
-        private int position = -1;
-        private final Completion completion = new Completion() {
-            @Override
-            public void complete() throws Throwable {
-                nextStep();
-            }
-        };
-
-        public void enqueue(final Step step) {
-            steps.add(step);
-        }
-
-        public void run() throws Throwable {
-            nextStep();
-        }
-
-        protected void nextStep() throws Throwable {
-            position++;
-            if (position < steps.size()) {
-                final Step step = steps.get(position);
-                step.step(completion);
-            }
-        }
-
-    }
-
-    static interface Completion {
-        void complete() throws Throwable;
-    }
-
-    static interface Step {
-        void step(Completion completion) throws Throwable;
-    }
-
-    abstract static class StepSkeleton implements Step {
-
-        @Override
-        public void step(final Completion completion) throws Throwable {
-            before();
-            try {
-                completion.complete();
-            } finally {
-                after();
-            }
-        }
-
-        abstract protected void before() throws Throwable;
-
-        abstract protected void after();
-
     }
 
 }
