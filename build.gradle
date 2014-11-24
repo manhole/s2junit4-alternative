@@ -27,6 +27,10 @@ sourceSets {
     }
 }
 
+test {
+    exclude 'org/seasar/framework/unit/Seasar2Test**'
+}
+
 repositories {
     mavenCentral()
     maven { url 'http://maven.seasar.org/maven2' }
