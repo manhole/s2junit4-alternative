@@ -108,7 +108,7 @@ public class StepsTest {
     }
 
     /**
-     * 例外が発生したら、先のStepへ進まないこと。
+     * executeで例外が発生したら、先のStepへ進まないこと。
      * またafterを必ず呼ぶこと。
      */
     @Test
@@ -179,11 +179,84 @@ public class StepsTest {
     }
 
     /**
+     * beforeで例外が発生したら、executeや先のStepへ進まないこと。自身のafterは呼ばないこと。
+     * 前stepまでのafterを呼ぶこと。
+     */
+    @Test
+    public void test_exception2() throws Throwable {
+        // ## Arrange ##
+        final Steps steps = new Steps();
+        final List<String> seq = new ArrayList<String>();
+
+        // ## Act ##
+        steps.enqueue(new StepSkeleton() {
+            @Override
+            public void before() throws Throwable {
+                seq.add("1");
+            }
+
+            @Override
+            public void after() {
+                seq.add("5");
+            }
+        });
+        steps.enqueue(new StepSkeleton() {
+            @Override
+            public void before() throws Throwable {
+                seq.add("2");
+            }
+
+            @Override
+            public void after() {
+                seq.add("4");
+            }
+        });
+        steps.enqueue(new StepSkeleton() {
+            @Override
+            public void before() throws Throwable {
+                seq.add("3");
+                throw new RuntimeException("e1");
+            }
+
+            @Override
+            public void execute(final Completion completion) throws Throwable {
+                seq.add("X");
+                super.execute(completion);
+            }
+
+            @Override
+            public void after() {
+                seq.add("X");
+            }
+        });
+        steps.enqueue(new StepSkeleton() {
+            @Override
+            public void before() throws Throwable {
+                seq.add("X");
+            }
+
+            @Override
+            public void after() {
+                seq.add("X");
+            }
+        });
+        try {
+            steps.run();
+            fail();
+        } catch (final RuntimeException e) {
+            assertThat(e.getMessage(), is("e1"));
+        }
+
+        // ## Assert ##
+        assertThat(seq, is(Arrays.asList("1", "2", "3", "4", "5")));
+    }
+
+    /**
      * finally処理で例外が出ると、前の例外は失われてしまう。
      * afterは必ず呼ぶこと。
      */
     @Test
-    public void test_exception2() throws Throwable {
+    public void test_exception3() throws Throwable {
         // ## Arrange ##
         final Steps steps = new Steps();
         final List<String> seq = new ArrayList<String>();
