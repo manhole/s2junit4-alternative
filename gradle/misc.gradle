@@ -6,12 +6,12 @@ task prepareDirectories(description: 'create source directories') << {
     project.sourceSets.each { sourceSet ->
         sourceSet.allSource.srcDirs.each { dir ->
             _mkdir(dir)
-            def packageDir = new File(dir, project.group.replace(".", "/"))
+            def packageDir = new File(dir, project.group.replace('.', '/'))
             _mkdir(packageDir)
         }
     }
 
-    if (project.plugins.hasPlugin("war")) {
+    if (project.plugins.hasPlugin('war')) {
         _mkdir(webAppDir)
     }
 }
@@ -19,25 +19,25 @@ task prepareDirectories(description: 'create source directories') << {
 def _mkdir(dir) {
     if (!dir.exists()) {
         assert dir.mkdirs()
-        logger.info("mkdir: {}", dir)
+        logger.info('mkdir: {}', dir)
     } else {
-        logger.info("already exist: {}", dir)
+        logger.info('already exist: {}', dir)
     }
 }
 
-def sourceEncoding = "UTF-8"
+def sourceEncoding = 'UTF-8'
 tasks.withType(SourceTask).each {
-    // ":compileGroovy", ":compileJava", "compileTestGroovy", ":compileTestJava", ":groovydoc", ":javadoc"
+    // ':compileGroovy', ':compileJava', 'compileTestGroovy', ':compileTestJava', ':groovydoc', ':javadoc'
     def p1 = 'options'
     def p2 = 'encoding'
     if (it.hasProperty(p1)) {
         if (it[p1].hasProperty(p2)) {
-            logger.info "${it} has options.encoding property"
+            logger.info('{} has \'{}.{}\' property', it, p1, p2)
             it[p1][p2] = sourceEncoding
         } else {
-            logger.info "${it} has no ${p2} property"
+            logger.info('{} has no \'{}.{}\' property', it, p1, p2)
         }
     } else {
-        logger.info "${it} has no ${p1} property"
+        logger.info('{} has no \'{}\' property', it, p1)
     }
 }

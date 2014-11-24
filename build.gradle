@@ -1,16 +1,16 @@
-apply plugin: "java"
+apply plugin: 'java'
 apply plugin: 'maven-publish'
 
-group = "jp.sourceforge.hotchpotch"
-version = "0.0.2-SNAPSHOT"
+group = 'jp.sourceforge.hotchpotch'
+version = '0.0.2-SNAPSHOT'
 
-apply from: "gradle/misc.gradle"
-apply from: "gradle/eclipse.gradle"
+apply from: 'gradle/misc.gradle'
+apply from: 'gradle/eclipse.gradle'
 
 // gradleとIDEAで出力先が被らないようにgradle側を変更したつもりだったが、IDEAはgradle設定を見て同じ箇所へ出力するようで、結局被ってしまう。
 buildDir = 'build-gradle'
-sourceCompatibility = "1.6"
-targetCompatibility = "1.6"
+sourceCompatibility = '1.6'
+targetCompatibility = '1.6'
 
 sourceSets {
     test {
@@ -29,18 +29,18 @@ sourceSets {
 
 repositories {
     mavenCentral()
-    maven { url "http://maven.seasar.org/maven2" }
+    maven { url 'http://maven.seasar.org/maven2' }
 }
 
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.7'
     compile 'org.seasar.container:s2-tiger:2.4.47'
-    compile "junit:junit:4.11"
+    compile 'junit:junit:4.11'
 
     testCompile 'org.slf4j:jcl-over-slf4j:1.7.7'
-    testCompile "ch.qos.logback:logback-classic:1.1.2"
-    testCompile "ch.qos.logback:logback-core:1.1.2"
-    testCompile "org.hamcrest:hamcrest-library:1.3"
+    testCompile 'ch.qos.logback:logback-classic:1.1.2'
+    testCompile 'ch.qos.logback:logback-core:1.1.2'
+    testCompile 'org.hamcrest:hamcrest-library:1.3'
 
     testCompile 'org.seasar.container:s2-framework:2.4.47:tests'
     testCompile 'org.seasar.container:s2-extension:2.4.47:tests'
@@ -57,7 +57,7 @@ dependencies {
 }
 
 task sourcesJar(type: Jar) {
-    classifier = "sources"
+    classifier = 'sources'
     from sourceSets.main.allSource
 }
 
@@ -72,7 +72,7 @@ publishing {
                 Node dependencies = projectNode.dependencies[0]
                 // dependenciesを作りなおす
                 dependencies.children().clear()
-                def dummyNode = dependencies.appendNode("dummy")
+                def dummyNode = dependencies.appendNode('dummy')
                 dummyNode + {
                     resolveStrategy = Closure.DELEGATE_FIRST
                     NodeBuilder builder1 = delegate
@@ -86,10 +86,10 @@ publishing {
                                 builder2.artifactId dependency.name
                                 builder2.version dependency.version
                                 def scope = toMavenScope(config, dependency)
-                                if ("compile" != scope) {
+                                if ('compile' != scope) {
                                     builder2.scope scope
                                 }
-                                //println "---- " + dependency
+                                //println '---- ' + dependency
                                 dependency.artifacts.each { DependencyArtifact artifact ->
                                     if (artifact.classifier) {
                                         builder2.type toMavenClassifier(artifact)
@@ -115,7 +115,7 @@ publishing {
 }
 
 def toMavenScope(Configuration config, Dependency dependency) {
-    if (dependency.ext.has("mavenScope")) {
+    if (dependency.ext.has('mavenScope')) {
         return dependency.mavenScope
     }
     switch (config.name) {
@@ -126,8 +126,8 @@ def toMavenScope(Configuration config, Dependency dependency) {
 }
 
 def toMavenClassifier(DependencyArtifact artifact) {
-    if ("tests" == artifact.classifier) {
-        return "test-jar"
+    if ('tests' == artifact.classifier) {
+        return 'test-jar'
     }
     return artifact.classifier
 }
