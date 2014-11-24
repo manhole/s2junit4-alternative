@@ -108,7 +108,13 @@ publishing {
         }
     }
     repositories {
-        def repo = "file:${rootDir}/../repo"
+        def repo
+        // ./gradlew publish -Ppublish_to=/path/to/repo/release'
+        if (project.hasProperty('publish_to')) {
+            repo = project.'publish_to'
+        } else {
+            repo = "file:${rootDir}/../repo"
+        }
         if (project.hasProperty('repo')) {
             repo = project.'repo'
         }
