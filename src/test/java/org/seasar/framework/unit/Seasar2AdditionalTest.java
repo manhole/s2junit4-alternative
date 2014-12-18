@@ -15,6 +15,13 @@
  */
 package org.seasar.framework.unit;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import jp.sourceforge.hotchpotch.s2junit.S2TestRuleTest;
 
 import org.junit.After;
@@ -27,16 +34,19 @@ import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.seasar.framework.unit.annotation.PostBindFields;
 import org.seasar.framework.unit.annotation.PreUnbindFields;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import junit.framework.TestCase;
 
 public class Seasar2AdditionalTest extends TestCase {
 
-    private static String log;
+    private static final Logger logger = LoggerFactory.getLogger(Seasar2AdditionalTest.class);
+    private static List<String> seq = new ArrayList<String>();
 
     @Override
     public void setUp() {
-        log = "";
+        seq.clear();
         Seasar2.configure();
     }
 
@@ -46,43 +56,48 @@ public class Seasar2AdditionalTest extends TestCase {
         S2TestMethodRunner.s2junit4Path = S2TestMethodRunner.DEFAULT_S2JUNIT4_PATH;
     }
 
+    static void seq(final String s) {
+        seq.add(s);
+        logger.debug("seq: {}", s);
+    }
+
     // 追加分
     @RunWith(Seasar2.class)
     public static class ExtendsTestParent {
 
         @Test
         public void aaa() {
-            log += "a";
+            seq("@Test-p");
         }
 
         @Before
         public void bbb1() {
-            log += "b";
+            seq("@Before-p");
         }
 
         @After
         public void eee1() {
-            log += "e";
+            seq("@After-p");
         }
 
         @PostBindFields
         public void ggg1() {
-            log += "g";
+            seq("@PostBindFields-p");
         }
 
         @PreUnbindFields
         public void hhh1() {
-            log += "h";
+            seq("@PreUnbindFields-p");
         }
 
         @BeforeClass
         public static void kkk1() {
-            log += "k";
+            seq("@BeforeClass-p");
         }
 
         @AfterClass
         public static void lll1() {
-            log += "l";
+            seq("@AfterClass-p");
         }
 
     }
@@ -91,37 +106,37 @@ public class Seasar2AdditionalTest extends TestCase {
 
         @Test
         public void aaa() {
-            log += "A";
+            seq("@Test-c");
         }
 
         @Before
         public void bbb2() {
-            log += "B";
+            seq("@Before-c");
         }
 
         @After
         public void eee2() {
-            log += "E";
+            seq("@After-c");
         }
 
         @PostBindFields
         public void ggg2() {
-            log += "G";
+            seq("@PostBindFields-c");
         }
 
         @PreUnbindFields
         public void hhh2() {
-            log += "H";
+            seq("@PreUnbindFields-c");
         }
 
         @BeforeClass
         public static void kkk2() {
-            log += "K";
+            seq("@BeforeClass-c");
         }
 
         @AfterClass
         public static void lll2() {
-            log += "L";
+            seq("@AfterClass-c");
         }
 
     }
@@ -136,7 +151,14 @@ public class Seasar2AdditionalTest extends TestCase {
          * @Before,@BeforeClassは親クラスが先に実行される。@After,@AfterClassは子クラスが先に実行される
          * 一方で、@PostBindFieldsは子クラスが先に実行される。@PreUnbindFieldsも子クラスが先のようだ。
          */
-        assertEquals("kKbBGgAHhEeLl", log);
+        assertThat(seq, is(Arrays.asList(
+                "@BeforeClass-p", "@BeforeClass-c",
+                "@Before-p", "@Before-c",
+                "@PostBindFields-c", "@PostBindFields-p",
+                "@Test-c",
+                "@PreUnbindFields-c", "@PreUnbindFields-p",
+                "@After-c", "@After-p",
+                "@AfterClass-c", "@AfterClass-p")));
     }
 
 }

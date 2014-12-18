@@ -5,6 +5,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -15,22 +19,30 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.seasar.framework.unit.annotation.PostBindFields;
 import org.seasar.framework.unit.annotation.PreUnbindFields;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author manhole
  */
 public class S2TestRuleAdditionalTest {
 
-    private static String log;
+    private static final Logger logger = LoggerFactory.getLogger(S2TestRuleAdditionalTest.class);
+    private static List<String> seq = new ArrayList<String>();
 
     @Before
     public void setUp() {
-        log = "";
+        seq.clear();
     }
 
     @After
     public void tearDown() {
         S2TestRule.s2junit4Path = S2TestRule.DEFAULT_S2JUNIT4_PATH;
+    }
+
+    static void seq(final String s) {
+        seq.add(s);
+        logger.debug("seq: {}", s);
     }
 
     // 追加分
@@ -41,47 +53,47 @@ public class S2TestRuleAdditionalTest {
 
         @Test
         public void aaa() {
-            log += "a";
+            seq("@Test-p");
         }
 
         @Before
         public void bbb1() {
-            log += "b";
+            seq("@Before-p");
         }
 
         @After
         public void eee1() {
-            log += "e";
+            seq("@After-p");
         }
 
         @PostBindFields
         public void ggg1() {
-            log += "g";
+            seq("@PostBindFields-p");
         }
 
         @PreUnbindFields
         public void hhh1() {
-            log += "h";
+            seq("@PreUnbindFields-p");
         }
 
         @BeforeClass
         public static void kkk1() {
-            log += "k";
+            seq("@BeforeClass-p");
         }
 
         @AfterClass
         public static void lll1() {
-            log += "l";
+            seq("@AfterClass-p");
         }
 
         @BeforeTest
         public void ooo1() {
-            log += "o";
+            seq("@BeforeTest-p");
         }
 
         @AfterTest
         public void ppp1() {
-            log += "p";
+            seq("@AfterTest-p");
         }
 
     }
@@ -90,47 +102,47 @@ public class S2TestRuleAdditionalTest {
 
         @Test
         public void aaa() {
-            log += "A";
+            seq("@Test-c");
         }
 
         @Before
         public void bbb2() {
-            log += "B";
+            seq("@Before-c");
         }
 
         @After
         public void eee2() {
-            log += "E";
+            seq("@After-c");
         }
 
         @PostBindFields
         public void ggg2() {
-            log += "G";
+            seq("@PostBindFields-c");
         }
 
         @PreUnbindFields
         public void hhh2() {
-            log += "H";
+            seq("@PreUnbindFields-c");
         }
 
         @BeforeClass
         public static void kkk2() {
-            log += "K";
+            seq("@BeforeClass-c");
         }
 
         @AfterClass
         public static void lll2() {
-            log += "L";
+            seq("@AfterClass-c");
         }
 
         @BeforeTest
         public void ooo2() {
-            log += "O";
+            seq("@BeforeTest-c");
         }
 
         @AfterTest
         public void ppp2() {
-            log += "P";
+            seq("@AfterTest-c");
         }
 
     }
@@ -150,7 +162,16 @@ public class S2TestRuleAdditionalTest {
          * @AfterTestと@PreUnbindFieldsを、@After,@AfterClassと同じように子クラスを先にする。
          *
          */
-        assertEquals("kKoOgGbBAEeHhPpLl", log);
+        assertThat(seq, is(Arrays.asList(
+                "@BeforeClass-p", "@BeforeClass-c",
+                "@BeforeTest-p", "@BeforeTest-c",
+                "@PostBindFields-p", "@PostBindFields-c",
+                "@Before-p", "@Before-c",
+                "@Test-c",
+                "@After-c", "@After-p",
+                "@PreUnbindFields-c", "@PreUnbindFields-p",
+                "@AfterTest-c", "@AfterTest-p",
+                "@AfterClass-c", "@AfterClass-p")));
     }
 
     @Test
