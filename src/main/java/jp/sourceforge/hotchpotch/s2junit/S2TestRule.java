@@ -171,6 +171,8 @@ public class S2TestRule implements TestRule {
             }
         });
 
+        // @jp.sourceforge.hotchpotch.s2junit.BeforeTest()
+        // @jp.sourceforge.hotchpotch.s2junit.AfterTest()
         steps.enqueue(new StepSkeleton() {
             @Override
             public void before() throws Throwable {
@@ -183,6 +185,8 @@ public class S2TestRule implements TestRule {
             }
         });
 
+        // @jp.sourceforge.hotchpotch.s2junit.BeforeTest("xxxx")
+        // @jp.sourceforge.hotchpotch.s2junit.AfterTest("xxxx")
         steps.enqueue(new StepSkeleton() {
             @Override
             public void before() throws Throwable {
@@ -219,6 +223,8 @@ public class S2TestRule implements TestRule {
             }
         });
 
+        // @org.seasar.framework.unit.annotation.PostBindFields
+        // @org.seasar.framework.unit.annotation.PreUnbindFields
         steps.enqueue(new StepSkeleton() {
             @Override
             public void before() throws Throwable {

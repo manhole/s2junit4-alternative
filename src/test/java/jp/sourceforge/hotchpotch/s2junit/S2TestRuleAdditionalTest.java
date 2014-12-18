@@ -155,9 +155,11 @@ public class S2TestRuleAdditionalTest {
         S2TestRuleTest.printFailures(result.getFailures());
         assertTrue(result.wasSuccessful());
         /*
+         * S2JUnit4と異なる点1:
          * TestRuleの仕組みに乗るため、S2JUnit4とは@Before,@Afterの実行位置が変わる。
-         * 代わりに@BeforeTest,@AfterTestが@Before,@Afterの位置で動作する。
+         * 代わりに@BeforeTest,@AfterTestが 従来の@Before,@Afterの位置で動作する。
          *
+         * S2JUnit4と異なる点2:
          * @BeforeTestと@PostBindFieldsを、@Before,@BeforeClassと同じように親クラスを先にする。
          * @AfterTestと@PreUnbindFieldsを、@After,@AfterClassと同じように子クラスを先にする。
          *
