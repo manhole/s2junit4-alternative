@@ -43,7 +43,9 @@ S2JUnit4では:
 1. (S2Container初期化)
 1. (bindFields)
 1. @PostBindFields
+1. (トランザクション開始)
 1. @Test
+1. (トランザクション終了)
 1. @PreUnbindFields
 1. (unbindFields)
 1. (S2Container破棄)
@@ -60,11 +62,13 @@ TestRuleで実装すると:
 1. (S2Container初期化)
 1. (bindFields)
 1. @PostBindFields
+1. (トランザクション開始)
 1. (Statement#evaluate ...)
 1. @Before                ... CHANGED
 1. @Test
 1. @After                 ... CHANGED
 1. (... Statement#evaluate)
+1. (トランザクション終了)
 1. @PreUnbindFields
 1. (unbindFields)
 1. (S2Container破棄)
