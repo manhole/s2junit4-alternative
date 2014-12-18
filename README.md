@@ -34,7 +34,7 @@ public class FooTest {
 * @RunWith(org.junit.runner.RunWith)ではなく、org.junit.rules.TestRuleを使います。
 * Parameterizedを使う場合は @RunWith(Parameterized.class) に指定する必要があります。
 * TestRuleで実現されていることにより、@Beforeなどの処理順序が変わっています。@Beforeは処理タイミングが変わったためTestContextのセットアップに向かなくなりました。
-いままで@Before,beforeで TestContext#setAutoIncluding(false); していた箇所は、書き換える必要があります。
+S2JUnit4にて @Before, before() で ```TestContext#setAutoIncluding(false);``` していた箇所は、書き換える必要があります。
 
 ```
 private TestContext ctx;
