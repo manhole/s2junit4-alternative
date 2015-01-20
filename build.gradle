@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'maven-publish'
 
 group = 'jp.sourceforge.hotchpotch'
-version = '0.0.2-SNAPSHOT'
+version = '0.0.2'
 
 apply from: 'gradle/misc.gradle'
 apply from: 'gradle/eclipse.gradle'
@@ -92,7 +92,7 @@ publishing {
                 Node dependencies = projectNode.dependencies[0]
                 // dependenciesを作りなおす
                 dependencies.children().clear()
-                def dummyNode = dependencies.appendNode('dummy')
+                Node dummyNode = dependencies.appendNode('dummy')
                 dummyNode + {
                     resolveStrategy = Closure.DELEGATE_FIRST
                     NodeBuilder builder1 = delegate
