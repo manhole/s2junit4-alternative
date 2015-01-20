@@ -50,7 +50,7 @@ repositories {
 
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.7'
-    compile 'org.seasar.container:s2-tiger:2.4.47'
+    compile 'org.seasar.container:s2-tiger:2.4.48'
     compile 'junit:junit:4.11'
 
     testCompile 'org.slf4j:jcl-over-slf4j:1.7.7'
@@ -58,8 +58,8 @@ dependencies {
     testCompile 'ch.qos.logback:logback-core:1.1.2'
     testCompile 'org.hamcrest:hamcrest-library:1.3'
 
-    testCompile 'org.seasar.container:s2-framework:2.4.47:tests'
-    testCompile 'org.seasar.container:s2-extension:2.4.47:tests'
+    testCompile 'org.seasar.container:s2-framework:2.4.48:tests'
+    testCompile 'org.seasar.container:s2-extension:2.4.48:tests'
     testCompile 'hsqldb:hsqldb:1.8.0.1'
 
     compile 'org.apache.geronimo.specs:geronimo-jta_1.1_spec:1.1.1', {
