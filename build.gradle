@@ -40,7 +40,11 @@ sourceSets {
 }
 
 test {
-    exclude 'org/seasar/framework/unit/Seasar2Test**'
+    // TestCaseから実行しているTestCaseを除外
+    exclude 'org/seasar/framework/unit/Seasar2Test$*'
+    exclude 'org/seasar/framework/unit/Seasar2AdditionalTest$*'
+    exclude 'jp/sourceforge/hotchpotch/s2junit/S2TestRuleTest$*'
+    exclude 'jp/sourceforge/hotchpotch/s2junit/S2TestRuleAdditionalTest$*'
 }
 
 repositories {
