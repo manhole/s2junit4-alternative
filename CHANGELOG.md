@@ -1,5 +1,10 @@
 # changelog
 
+## 0.0.3 (20XX-XX-XX)
+
+* testの後処理にS2ContainerDestroyerを使うようにしました。
+
+
 ## 0.0.2 (2015-01-20)
 
 * Stepsの実装を変更しました。スタックがstepsで深くならないようにしました。

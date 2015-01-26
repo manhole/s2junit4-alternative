@@ -22,6 +22,7 @@ import org.seasar.framework.container.S2Container;
 import org.seasar.framework.container.factory.S2ContainerFactory;
 import org.seasar.framework.container.factory.SingletonS2ContainerFactory;
 import org.seasar.framework.container.impl.S2ContainerBehavior;
+import org.seasar.framework.container.servlet.S2ContainerDestroyer;
 import org.seasar.framework.convention.NamingConvention;
 import org.seasar.framework.convention.impl.NamingConventionImpl;
 import org.seasar.framework.env.Env;
@@ -32,7 +33,6 @@ import org.seasar.framework.unit.S2TestIntrospector;
 import org.seasar.framework.unit.Seasar2;
 import org.seasar.framework.unit.UnitClassLoader;
 import org.seasar.framework.unit.annotation.PublishedTestContext;
-import org.seasar.framework.util.DisposableUtil;
 import org.seasar.framework.util.ResourceUtil;
 import org.seasar.framework.util.StringUtil;
 import org.seasar.framework.util.tiger.CollectionsUtil;
@@ -367,7 +367,7 @@ public class S2TestRule implements TestRule {
 
     protected void tearDownTestContext() {
         testContext = null;
-        DisposableUtil.dispose();
+        S2ContainerDestroyer.destroy();
         S2ContainerBehavior
                 .setProvider(new S2ContainerBehavior.DefaultProvider());
         Thread.currentThread().setContextClassLoader(originalClassLoader);
